@@ -13,8 +13,8 @@ fetch('/api/verticalclipper/config')
     config = data;
     if (data.enabled) {
       button.disabled = false;
-      button.innerHTML = 'Get the prompt · ₹149 <b>→</b>';
-      setStatus(data.mode === 'test' ? 'Test checkout is active. No real payment will be collected.' : 'Secure Razorpay checkout · private download after payment.');
+      button.innerHTML = 'Get the guide · ₹149 <b>→</b>';
+      setStatus(data.mode === 'test' ? 'Test checkout is active. No real payment will be collected.' : '');
     } else {
       button.disabled = true;
       button.textContent = 'Checkout is being configured';
@@ -37,8 +37,8 @@ button.addEventListener('click', async () => {
       key: order.keyId,
       amount: order.amount,
       currency: order.currency,
-      name: 'An Intellectual Company',
-      description: 'GTA Streamer Face Clipper Prompt + PDF Guide',
+      name: 'GTA Creator Kit',
+      description: 'GTA Face Clipper PDF Guide + Master Prompt',
       order_id: order.orderId,
       theme: { color: '#d83b2d' },
       handler: async (payment) => {
