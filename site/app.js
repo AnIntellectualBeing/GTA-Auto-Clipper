@@ -13,7 +13,7 @@ fetch('/api/config').then((response) => response.json()).then((config) => {
   if (config.enabled) {
     buyButton.disabled = false;
     buyButton.innerHTML = 'Get the guide · ₹149 <span>→</span>';
-    setStatus(config.mode === 'test' ? 'Test checkout is active. No real payment will be collected.' : 'Secure checkout · Instant guide download after payment.');
+    setStatus(config.mode === 'test' ? 'Test checkout is active. No real payment will be collected.' : 'Secure checkout · Download button appears after payment.');
   } else {
     buyButton.disabled = true;
     buyButton.textContent = 'Checkout is not active yet';
