@@ -49,8 +49,7 @@ buyButton.addEventListener('click', async () => {
           });
           const result = await verified.json();
           if (!verified.ok) throw new Error(result.error || 'Payment verification failed.');
-          setStatus('Payment confirmed. Your guide download is starting.');
-          window.location.assign('/api/download');
+          window.location.assign('/download-ready.html');
         } catch (error) {
           setStatus(error.message || 'Payment verification failed. Contact support if you were charged.', true);
           buyButton.disabled = false;
