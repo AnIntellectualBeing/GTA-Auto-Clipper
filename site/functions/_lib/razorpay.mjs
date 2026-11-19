@@ -1,9 +1,9 @@
 export const GUIDE_AMOUNT_PAISE = 14900;
 
-export function isPaymentCaptured(payment, orderId) {
+export function isPaymentCaptured(payment, orderId, expectedAmount = GUIDE_AMOUNT_PAISE) {
   return payment?.status === 'captured'
     && payment?.order_id === orderId
-    && Number(payment?.amount) === GUIDE_AMOUNT_PAISE;
+    && Number(payment?.amount) === expectedAmount;
 }
 
 export function constantTimeHexEqual(left, right) {

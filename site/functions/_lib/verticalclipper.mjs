@@ -1,4 +1,4 @@
-export const VERTICAL_CLIPPER_AMOUNT_PAISE = 14900;
+export const VERTICAL_CLIPPER_AMOUNT_PAISE = 19900;
 
 export async function verticalClipperBytes(env) {
   if (!env.VERTICAL_CLIPPER_CONTENT_GZIP_BASE64) return null;

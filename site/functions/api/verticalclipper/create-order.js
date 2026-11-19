@@ -11,7 +11,7 @@ export async function onRequestPost({ request, env }) {
     const response = await fetch('https://api.razorpay.com/v1/orders', {
       method: 'POST',
       headers: { authorization: razorpayAuth(env), 'content-type': 'application/json' },
-      body: JSON.stringify({ amount: VERTICAL_CLIPPER_AMOUNT_PAISE, currency: 'INR', receipt, notes: { product: 'gta-streamer-face-clipper-prompt-pack' } }),
+      body: JSON.stringify({ amount: VERTICAL_CLIPPER_AMOUNT_PAISE, currency: 'INR', receipt, notes: { product: 'gta-face-clipper-complete-toolkit' } }),
     });
     if (!response.ok) return jsonResponse({ error: 'Could not start checkout. Please try again.' }, 502);
     const order = await response.json();

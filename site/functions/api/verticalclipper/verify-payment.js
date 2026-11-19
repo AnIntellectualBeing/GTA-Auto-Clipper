@@ -1,5 +1,5 @@
 import { constantTimeHexEqual, hmacHex, isPaymentCaptured, jsonResponse, razorpayAuth } from '../../_lib/razorpay.mjs';
-import { sameOrigin, verticalClipperBytes } from '../../_lib/verticalclipper.mjs';
+import { VERTICAL_CLIPPER_AMOUNT_PAISE, sameOrigin, verticalClipperBytes } from '../../_lib/verticalclipper.mjs';
 
 export async function onRequestPost({ request, env }) {
   if (!sameOrigin(request)) return jsonResponse({ error: 'Payment verification was not accepted.' }, 403);
@@ -16,7 +16,7 @@ export async function onRequestPost({ request, env }) {
   if (!constantTimeHexEqual(expected, signature)) return jsonResponse({ error: 'Payment verification failed.' }, 400);
   try {
     const response = await fetch(`https://api.razorpay.com/v1/payments/${encodeURIComponent(paymentId)}`, { headers: { authorization: razorpayAuth(env) } });
-    if (!response.ok || !isPaymentCaptured(await response.json(), orderId)) return jsonResponse({ error: 'Payment is not confirmed yet. Contact support if your account was charged.' }, 402);
+    if (!response.ok || !isPaymentCaptured(await response.json(), orderId, VERTICAL_CLIPPER_AMOUNT_PAISE)) return jsonResponse({ error: 'Payment is not confirmed yet. Contact support if your account was charged.' }, 402);
   } catch {
     return jsonResponse({ error: 'Could not confirm payment. Please retry in a moment.' }, 502);
   }

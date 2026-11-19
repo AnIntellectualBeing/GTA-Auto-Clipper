@@ -10,5 +10,5 @@ export async function onRequestGet({ request, env }) {
   if (!constantTimeHexEqual(expected, parts[2])) return new Response('A verified purchase is required to download this product.', { status: 401 });
   const pack = await verticalClipperBytes(env);
   if (!pack) return new Response('Prompt pack delivery is temporarily unavailable.', { status: 503 });
-  return new Response(pack, { headers: { 'content-type': 'application/zip', 'content-disposition': 'attachment; filename="GTA-Streamer-Face-Clipper-Prompt-Pack.zip"', 'cache-control': 'private, no-store' } });
+  return new Response(pack, { headers: { 'content-type': 'application/zip', 'content-disposition': 'attachment; filename="GTA-Face-Clipper-Complete-Tool-Pack.zip"', 'cache-control': 'private, no-store' } });
 }

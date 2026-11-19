@@ -3,3 +3,11 @@
 .format-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:24px;max-width:700px}.format-gallery .vclipper-preview{max-width:320px}.sample-gallery{grid-template-columns:1fr}
 @media(max-width:650px){.format-gallery{gap:10px}.format-gallery .vclipper-preview{padding:6px}.format-gallery .vclipper-preview figcaption{font-size:8px}}
 .nav-right .gh-icon{flex-shrink:0;white-space:nowrap}.nav-right .gh-icon svg{flex:0 0 17px}.nav-right{flex-shrink:0}
+/* Fixed-size vertical previews prevent portrait media from stretching into a wide black panel. */
+.clipper-inner{grid-template-columns:minmax(0,390px) minmax(0,1fr);align-items:center}
+.clipper-visual{width:min(100%,360px);height:auto;min-height:0;aspect-ratio:9/16;margin-inline:auto;background:transparent}
+.clipper-visual img{display:block;width:100%;height:100%;max-height:none;object-fit:cover;border-radius:16px}
+.format-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;gap:16px;text-align:center}
+.format-strip span{min-width:0;line-height:1.45}
+@media(max-width:900px){.clipper-inner{grid-template-columns:minmax(0,330px) minmax(0,1fr)}}
+@media(max-width:650px){.clipper-inner{grid-template-columns:1fr}.clipper-visual{width:min(100%,360px)}.format-strip{grid-template-columns:1fr;gap:10px}.format-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.format-gallery .vclipper-preview{width:100%;max-width:none}.format-gallery img{max-width:100%}}
