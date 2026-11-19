@@ -5,7 +5,8 @@ export async function verticalClipperBytes(env) {
   try {
     const input = Uint8Array.from(atob(env.VERTICAL_CLIPPER_CONTENT_GZIP_BASE64), (character) => character.charCodeAt(0));
     const stream = new Blob([input]).stream().pipeThrough(new DecompressionStream('gzip'));
-    return new Uint8Array(await new Response(stream).arrayBuffer());
+    const pack = new Uint8Array(await new Response(stream).arrayBuffer());
+    return pack[0] === 0x50 && pack[1] === 0x4b && pack[2] === 0x03 && pack[3] === 0x04 ? pack : null;
   } catch {
     return null;
   }
