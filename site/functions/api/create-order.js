@@ -1,4 +1,4 @@
-import { GUIDE_AMOUNT_PAISE, guideBytes, jsonResponse, razorpayAuth } from '../_lib/razorpay.mjs';
+import { GUIDE_AMOUNT_PAISE, guideBytes, jsonResponse, orderNotes, razorpayAuth } from '../_lib/razorpay.mjs';
 
 export async function onRequestPost({ request, env }) {
   if (!env.RAZORPAY_KEY_ID || !env.RAZORPAY_KEY_SECRET || !await guideBytes(env)) {
@@ -17,7 +17,7 @@ export async function onRequestPost({ request, env }) {
         amount: GUIDE_AMOUNT_PAISE,
         currency: 'INR',
         receipt,
-        notes: { product: 'gta-auto-clipper-guide' },
+        notes: orderNotes('gta-auto-clipper-guide', input, env),
       }),
     });
     if (!upstream.ok) return jsonResponse({ error: 'Could not start checkout. Please try again.' }, 502);

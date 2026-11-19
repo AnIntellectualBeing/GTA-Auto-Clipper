@@ -32,3 +32,9 @@ To switch to live checkout, only after the Razorpay account is approved and the 
 ## Merchant information required on the site
 
 Before requesting merchant verification or accepting live money, replace the seller and contact placeholders in `site/index.html`, `site/terms.html`, `site/privacy.html`, and `site/refunds.html`. State the actual refund/cancellation terms and delivery method. Keep pricing, the digital guide description, customer support, and merchant dashboard details consistent.
+
+## Creator referral links
+
+Give each creator a unique code such as `priya`. Append `?ref=priya` to either product's landing page, such as `https://masterprompt.anintellectualcompany.com/verticalclipper/?ref=priya`. The most recent valid code is remembered for 30 days in the same browser and is shared across the two product pages.
+
+Razorpay orders include the product and, when present, `notes.referral_code`. Use the order ID to look up those notes and count orders with captured payments. If you want to restrict attribution to issued codes, set the Cloudflare Pages variable `REFERRAL_CODES` to a comma-separated list. Without the variable, either checkout accepts any code of up to 40 letters, digits, hyphens, or underscores that starts with a letter or digit.

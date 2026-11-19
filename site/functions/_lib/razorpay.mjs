@@ -1,4 +1,12 @@
+import { normalizeReferralCode } from '../../referral.js';
+
 export const GUIDE_AMOUNT_PAISE = 14900;
+
+export function orderNotes(product, input, env) {
+  const code = normalizeReferralCode(input?.referralCode);
+  const allowed = env.REFERRAL_CODES?.split(',').map(normalizeReferralCode);
+  return code && (!allowed || allowed.includes(code)) ? { product, referral_code: code } : { product };
+}
 
 export function isPaymentCaptured(payment, orderId, expectedAmount = GUIDE_AMOUNT_PAISE) {
   return payment?.status === 'captured'

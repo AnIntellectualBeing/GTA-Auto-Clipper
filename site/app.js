@@ -1,4 +1,7 @@
-﻿const buyButton = document.querySelector('#buy-button');
+import { rememberReferral } from './referral.js';
+
+const referralCode = rememberReferral();
+const buyButton = document.querySelector('#buy-button');
 const statusLine = document.querySelector('#payment-status');
 document.querySelector('#year').textContent = new Date().getFullYear();
 
@@ -28,7 +31,7 @@ buyButton.addEventListener('click', async () => {
   try {
     const response = await fetch('/api/create-order', {
       method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({}),
+      body: JSON.stringify({ referralCode }),
     });
     const order = await response.json();
     if (!response.ok) throw new Error(order.error || 'Could not start checkout.');

@@ -1,4 +1,7 @@
-﻿const button = document.querySelector('#buy-button');
+import { rememberReferral } from './referral.js';
+
+const referralCode = rememberReferral();
+const button = document.querySelector('#buy-button');
 const status = document.querySelector('#payment-status');
 function setStatus(message, error = false) {
   status.textContent = message;
@@ -18,7 +21,7 @@ button.addEventListener('click', async () => {
   setStatus('Starting secure checkout…');
   try {
     const created = await fetch('/api/verticalclipper/create-order', {
-      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({}),
+      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ referralCode }),
     });
     const order = await created.json();
     if (!created.ok) throw new Error(order.error || 'Could not start checkout.');
@@ -38,8 +41,7 @@ button.addEventListener('click', async () => {
           });
           const result = await verified.json();
           if (!verified.ok) throw new Error(result.error || 'Payment verification failed.');
-          setStatus('Payment confirmed. Your complete tool pack is downloading.');
-          window.location.assign('/api/verticalclipper/download');
+          window.location.replace('/verticalclipper/download-ready');
         } catch (error) {
           setStatus(error.message || 'Payment verification failed. Contact support if you were charged.', true);
           button.disabled = false;

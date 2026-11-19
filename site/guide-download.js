@@ -25,7 +25,7 @@ downloadLink.addEventListener('click', async (event) => {
     const url = URL.createObjectURL(zip);
     const saveLink = document.createElement('a');
     saveLink.href = url;
-    saveLink.download = 'GTA-Clipping-Guide-Premium.zip';
+    saveLink.download = downloadLink.download;
     document.body.append(saveLink);
     saveLink.click();
     saveLink.remove();

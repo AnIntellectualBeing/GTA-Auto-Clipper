@@ -1,4 +1,4 @@
-import { jsonResponse, razorpayAuth } from '../../_lib/razorpay.mjs';
+import { jsonResponse, orderNotes, razorpayAuth } from '../../_lib/razorpay.mjs';
 import { VERTICAL_CLIPPER_AMOUNT_PAISE, sameOrigin, verticalClipperBytes } from '../../_lib/verticalclipper.mjs';
 
 export async function onRequestPost({ request, env }) {
@@ -6,12 +6,18 @@ export async function onRequestPost({ request, env }) {
   if (!env.RAZORPAY_KEY_ID || !env.RAZORPAY_KEY_SECRET || !await verticalClipperBytes(env)) {
     return jsonResponse({ error: 'Checkout is being configured. Please try again later.' }, 503);
   }
+  const input = await request.json().catch(() => null);
   const receipt = `vclip${crypto.randomUUID().replaceAll('-', '').slice(0, 28)}`;
   try {
     const response = await fetch('https://api.razorpay.com/v1/orders', {
       method: 'POST',
       headers: { authorization: razorpayAuth(env), 'content-type': 'application/json' },
-      body: JSON.stringify({ amount: VERTICAL_CLIPPER_AMOUNT_PAISE, currency: 'INR', receipt, notes: { product: 'gta-face-clipper-complete-toolkit' } }),
+      body: JSON.stringify({
+        amount: VERTICAL_CLIPPER_AMOUNT_PAISE,
+        currency: 'INR',
+        receipt,
+        notes: orderNotes('gta-face-clipper-complete-toolkit', input, env),
+      }),
     });
     if (!response.ok) return jsonResponse({ error: 'Could not start checkout. Please try again.' }, 502);
     const order = await response.json();
