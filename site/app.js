@@ -49,7 +49,7 @@ buyButton.addEventListener('click', async () => {
           });
           const result = await verified.json();
           if (!verified.ok) throw new Error(result.error || 'Payment verification failed.');
-          window.location.assign('/download-ready.html');
+          window.location.replace('/download-ready');
         } catch (error) {
           setStatus(error.message || 'Payment verification failed. Contact support if you were charged.', true);
           buyButton.disabled = false;

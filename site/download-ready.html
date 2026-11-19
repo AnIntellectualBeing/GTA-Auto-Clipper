@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
   <link rel="stylesheet" href="/download-ready.css">
+  <script src="/guide-download.js" defer></script>
 </head>
 <body>
   <header class="topbar wrap">
@@ -23,8 +24,8 @@
       <p class="eyebrow">PAYMENT CONFIRMED</p>
       <h1 id="download-title">Your prompt pack is ready.</h1>
       <p class="download-intro">Click the button to download your GTA Creator Master Prompt Pack and PDF setup guide in one ZIP file.</p>
-      <a class="button button-buy download-button" href="/api/download">Download your ZIP</a>
-      <p class="download-hint">Open the ZIP to find the PDF guide and prompt.</p>
+      <a class="button button-buy download-button" id="download-link" href="/api/download">Download your ZIP</a>
+      <p class="download-hint" id="download-status" role="status">Open the ZIP to find the PDF guide and prompt.</p>
       <div class="download-file"><span class="file-icon" aria-hidden="true">ZIP</span><span><strong>GTA-Clipping-Guide-Premium.zip</strong><small>PDF guide and copy-ready prompt</small></span></div>
       <p class="support-note">Need help? <a href="mailto:anintellectualcompany.contact@gmail.com">Contact us</a> and include your Razorpay payment reference.</p>
     </section>
