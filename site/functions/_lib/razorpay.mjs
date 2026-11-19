@@ -41,7 +41,9 @@ export async function guideBytes(env) {
   try {
     const bytes = Uint8Array.from(atob(env.GUIDE_CONTENT_GZIP_BASE64), (char) => char.charCodeAt(0));
     const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
-    return new Uint8Array(await new Response(stream).arrayBuffer());
+    const guide = new Uint8Array(await new Response(stream).arrayBuffer());
+    const hasZipHeader = guide[0] === 0x50 && guide[1] === 0x4b && guide[2] === 0x03 && guide[3] === 0x04;
+    return hasZipHeader ? guide : null;
   } catch {
     return null;
   }

@@ -27,7 +27,10 @@ test('hex signature comparison rejects malformed and unequal values', () => {
 test('checkout creates a fixed-price Razorpay order and unlocks only a verified capture', async () => {
   const previousFetch = globalThis.fetch;
   const secret = 'test_secret_never_for_production';
-  const guide = Buffer.from('%PDF-1.7\nPrivate buyer guide');
+  const guide = Buffer.from(
+    'UEsDBBQAAAAAADMVdF0q3jQ7CgAAAAoAAAAJAAAAZ3VpZGUudHh0dGVzdCBndWlkZVBLAQIUABQAAAAAADMVdF0q3jQ7CgAAAAoAAAAJAAAAAAAAAAAAAACAAQAAAABndWlkZS50eHRQSwUGAAAAAAEAAQA3AAAAMQAAAAAA',
+    'base64',
+  );
   const env = {
     RAZORPAY_KEY_ID: 'rzp_test_example',
     RAZORPAY_KEY_SECRET: secret,
@@ -43,6 +46,13 @@ test('checkout creates a fixed-price Razorpay order and unlocks only a verified 
   };
 
   try {
+    const wrongFile = await createOrder({
+      env: { ...env, GUIDE_CONTENT_GZIP_BASE64: gzipSync('%PDF-1.7\nPrivate buyer guide').toString('base64') },
+      request: new Request('https://example.test/api/create-order', { method: 'POST', body: '{}' }),
+    });
+    assert.equal(wrongFile.status, 503);
+    assert.equal(orderBody, undefined);
+
     const orderResponse = await createOrder({
       env,
       request: new Request('https://example.test/api/create-order', {
