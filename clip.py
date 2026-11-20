@@ -546,49 +546,66 @@ def detect_smart_frame(video_path, start, length, sample_count=9):
     return choose_crop_offset(frame_width, frame_height, samples), roi
 
 
-def build_video_filter(ass_name, crop=False, crop_offset=0.5, source_roi=None, layout="fit", pan_keys=None):
-    """layout "fill" (default in the CLI): gameplay covers the whole 9:16 frame, centered (or shifted away from a
-    side facecam). layout "fit": the full source sits in the middle over a blurred copy (old look)."""
+
+def build_video_filter(ass_name, crop=False, crop_offset=0.5, source_roi=None, layout="fit", pan_keys=None,
+                       captions=True):
+    """Build the vertical video filter, optionally adding generated captions."""
     offset = min(1.0, max(0.0, float(crop_offset)))
+
     if crop:
         layout = "fill"
+
     if layout == "fill":
         pre = ""
         if source_roi:
             x, y, width, height = source_roi
             pre = f"crop={width}:{height}:{x}:{y},"
-        if pan_keys and not source_roi:                    # follow the player (player_track.py)
+
+        if pan_keys and not source_roi:
             from player_track import crop_x_expr
-            return (f"[0:v]setpts=PTS-STARTPTS,scale=1080:1920:force_original_aspect_ratio=increase,"
-                    f"crop=1080:1920:'{crop_x_expr(pan_keys)}':(ih-1920)/2,ass={ass_name}")
-        return (f"[0:v]{pre}scale=1080:1920:force_original_aspect_ratio=increase,"
-                f"crop=1080:1920:(iw-1080)*{offset:.4f}:(ih-1920)/2,"
-                f"setpts=PTS-STARTPTS,ass={ass_name}")
-    if source_roi:
+            fg = (f"[0:v]setpts=PTS-STARTPTS,scale=1080:1920:force_original_aspect_ratio=increase,"
+                  f"crop=1080:1920:'{crop_x_expr(pan_keys)}':(ih-1920)/2")
+        else:
+            fg = (f"[0:v]{pre}scale=1080:1920:force_original_aspect_ratio=increase,"
+                  f"crop=1080:1920:(iw-1080)*{offset:.4f}:(ih-1920)/2,"
+                  f"setpts=PTS-STARTPTS")
+
+    elif source_roi:
         x, y, width, height = source_roi
-        return (f"[0:v]crop={width}:{height}:{x}:{y},split[a][b];"
-                "[a]scale=1080:1920:force_original_aspect_ratio=increase,"
-                "crop=1080:1920,boxblur=30:5[bg];[b]scale=1080:-2[fg];"
-                f"[bg][fg]overlay=(W-w)/2:(H-h)/2,setpts=PTS-STARTPTS,ass={ass_name}")
-    return ("[0:v]split[a][b];[a]scale=1080:1920:force_original_aspect_ratio=increase,"
-            "crop=1080:1920,boxblur=30:5[bg];[b]scale=1080:-2[fg];"
-            "[bg][fg]overlay=(W-w)/2:(H-h)/2,setpts=PTS-STARTPTS,ass=" + ass_name)
+        fg = (f"[0:v]crop={width}:{height}:{x}:{y},split[a][b];"
+              "[a]scale=1080:1920:force_original_aspect_ratio=increase,"
+              "crop=1080:1920,boxblur=30:5[bg];[b]scale=1080:-2[fg];"
+              "[bg][fg]overlay=(W-w)/2:(H-h)/2,setpts=PTS-STARTPTS")
+
+    else:
+        fg = ("[0:v]split[a][b];[a]scale=1080:1920:force_original_aspect_ratio=increase,"
+              "crop=1080:1920,boxblur=30:5[bg];[b]scale=1080:-2[fg];"
+              "[bg][fg]overlay=(W-w)/2:(H-h)/2,setpts=PTS-STARTPTS")
+
+    if captions:
+        fg += f",ass={ass_name}"
+
+    return fg
+
 
 
 def cut(chunk_path, words, start, length, out_mp4, credit, crop=False, crop_offset=0.5,
-        source_roi=None, caption_margin_v=400, layout="fit", pan_keys=None):
+        source_roi=None, caption_margin_v=400, layout="fit", pan_keys=None, captions=True):
     d = os.path.dirname(out_mp4)
     ass_name = "cap_" + os.path.basename(out_mp4) + ".ass"
-    write_ass(os.path.join(d, ass_name), words, start, length, credit, caption_margin_v)
-    fg = build_video_filter(ass_name, crop=crop, crop_offset=crop_offset, source_roi=source_roi, layout=layout,
-                            pan_keys=pan_keys)
+    if captions:
+        write_ass(os.path.join(d, ass_name), words, start, length, credit, caption_margin_v)
+
+    fg = build_video_filter(ass_name, crop=crop, crop_offset=crop_offset, source_roi=source_roi,
+                            layout=layout, pan_keys=pan_keys, captions=captions)
     r = subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-ss", f"{start:.2f}",
                         "-i", os.path.abspath(chunk_path), "-t", f"{length}",
                         "-filter_complex", fg, "-af", "asetpts=PTS-STARTPTS",
                         "-c:v", "libx264", "-preset", "veryfast",
                         "-crf", "21", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart",
                         os.path.basename(out_mp4)], cwd=d, capture_output=True, text=True)
-    os.remove(os.path.join(d, ass_name))
+    if captions and os.path.exists(os.path.join(d, ass_name)):
+        os.remove(os.path.join(d, ass_name))
     if r.returncode:
         print("ffmpeg cut failed:", r.stderr[-300:])
         return False
@@ -606,6 +623,8 @@ def main():
     ap.add_argument("url", nargs="?")
     ap.add_argument("--file")
     ap.add_argument("--test", action="store_true", help="render to test_out instead of output")
+    ap.add_argument("--no-captions", action="store_false", dest="captions", default=True,
+                    help="disable generated word-by-word captions")
     ap.add_argument("--chunk", type=int, default=90)
     ap.add_argument("--max-seconds", type=int, default=DEFAULT_MAX_SECONDS,
                     help="stop after N seconds; 0 keeps recording until Ctrl+C (default: 0)")
@@ -714,7 +733,7 @@ def main():
                 caption_margin_v = caption_margin_for_video(c, crop=smart_crop, source_roi=None if smart_crop else source_roi)
                 if cut(c, words, start, a.clip_len, mp4, who.get("credit"), crop=smart_crop,
                        crop_offset=crop_offset, source_roi=source_roi,
-                       caption_margin_v=caption_margin_v, layout=layout, pan_keys=pan_keys):
+                       caption_margin_v=caption_margin_v, layout=layout, pan_keys=pan_keys, captions=a.captions):
                     n_clips += 1
                     text = " ".join(w[2] for w in words if start <= w[0] < start + a.clip_len)
                     chat_summary = summarize_chat_window(chunk_chat, start, a.clip_len)

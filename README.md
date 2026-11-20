@@ -61,6 +61,7 @@ Important options:
 | `--moment-source` | `chat` | Choose `chat`, `combined`, or `audio` for highlight selection |
 | `--spoken-language` | `auto` | `auto` detects the language and locks to Hindi (Hinglish captions) once a stream is clearly Hindi. `hi` / `en` force it for the whole stream |
 | `--no-chat` | off | Skip live-chat collection and use audio and speech only |
+| `--no-captions` | off | Disable generated word-by-word captions; captions are enabled by default |
 | `--output-dir` | `output/` | Custom destination folder |
 
 Examples: `--moment-source chat` uses chat reactions first; `--moment-source combined` scores chat, audio, and speech together; `--moment-source audio` uses the original audio and speech method. Chat mode falls back to audio and speech when it has no chat data.
