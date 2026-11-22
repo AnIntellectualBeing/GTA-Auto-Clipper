@@ -38,3 +38,15 @@ Before requesting merchant verification or accepting live money, replace the sel
 Give each creator a unique code such as `priya`. Append `?ref=priya` to either product's landing page, such as `https://masterprompt.anintellectualcompany.com/verticalclipper/?ref=priya`. The most recent valid code is remembered for 30 days in the same browser and is shared across the two product pages.
 
 Razorpay orders include the product and, when present, `notes.referral_code`. Use the order ID to look up those notes and count orders with captured payments. If you want to restrict attribution to issued codes, set the Cloudflare Pages variable `REFERRAL_CODES` to a comma-separated list. Without the variable, either checkout accepts any code of up to 40 letters, digits, hyphens, or underscores that starts with a letter or digit.
+
+## MasterClip (/MasterClipTool)
+
+The MasterClip page at `/MasterClipTool/` uses the same Razorpay key pair and the same `?ref=` referral flow as the other products. The server fixes the price at ₹349 (`MASTERCLIP_AMOUNT_PAISE = 34900` in `site/functions/_lib/masterclip.mjs`) and tags orders with `notes.product = masterclip-windows`.
+
+After a verified, captured payment the buyer gets a 24-hour signed cookie and lands on `/MasterClipTool/download-ready`. Its button calls `/api/masterclip/download`, which redirects to the URL in the Pages variable `MASTERCLIP_DOWNLOAD_URL` (https only). Checkout stays off (503 "being configured") until that variable is set:
+
+```powershell
+npx wrangler pages secret put MASTERCLIP_DOWNLOAD_URL --project-name gta-auto-clipper
+```
+
+Referral links: `https://masterprompt.anintellectualcompany.com/MasterClipTool/?ref=<code>`. See `docs/MasterClip-referral-links.txt`. If `REFERRAL_CODES` is set, add any new code (for example `akshat`) to it.
