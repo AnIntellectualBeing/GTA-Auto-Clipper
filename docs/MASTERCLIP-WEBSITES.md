@@ -27,6 +27,8 @@ The source branch is masterclip-page. Keep its changes in the canonical remote m
 
 Screenshots are actual app UI from local artifacts: installed-home.png and installed-step1.png. They illustrate template selection and live recording, not a completed output clip. There are no invented video examples.
 
-Installer: https://github.com/AnIntellectualBeing/MasterClip/releases/download/v1.0.0/MasterClipSetup.exe
+Installer: https://github.com/AnIntellectualBeing/MasterClip/releases/latest/download/MasterClipSetup.exe
+
+Release update (2026-11-22): the company download button and production `MASTERCLIP_DOWNLOAD_URL` both follow the latest official release. This delivers MasterClip 1.1.0 once published without changing payment or referral behavior. The existing sales site was redeployed from the clean 0b36d3e snapshot to production `main`; all 13 checkout/recovery tests passed. Windows installation help is in the app and in the MasterClip repository's `docs/WINDOWS-HELP.md`.
 
 No payment secrets were changed. No real payment was made during this website update. Basic clipping needs no AI subscription; local AI is used. Links, model downloads and posting need internet. Optional Zernio and external AI costs are separate.
