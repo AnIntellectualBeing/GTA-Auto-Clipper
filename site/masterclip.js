@@ -28,6 +28,7 @@ async function buy() {
     });
     const order = await created.json();
     if (!created.ok) throw new Error(order.error || 'Could not start checkout.');
+    try { localStorage.setItem(ORDER_KEY, JSON.stringify({ orderId: order.orderId, at: Date.now() })); } catch { /* private mode */ }
     const checkout = new Razorpay({
       key: order.keyId,
       amount: order.amount,
@@ -44,7 +45,7 @@ async function buy() {
           });
           const result = await verified.json();
           if (!verified.ok) throw new Error(result.error || 'Payment verification failed.');
-          window.location.replace('/MasterClipTool/download-ready');
+          deliver(result.link, result.paymentId);
         } catch (error) {
           setStatus(error.message || 'Payment verification failed. Contact support if you were charged.', true);
           setBusy(false);
@@ -64,3 +65,32 @@ async function buy() {
 }
 
 for (const button of buttons) button.addEventListener('click', buy);
+
+// Instagram / UPI apps: the buyer pays in another app and comes back to a page that never heard
+// about it. We remember the order and ask the server until Razorpay says it's paid.
+const ORDER_KEY = 'masterclip.order';
+function savedOrder() { try { return JSON.parse(localStorage.getItem(ORDER_KEY) || 'null'); } catch { return null; } }
+function deliver(link, paymentId) {
+  try {
+    localStorage.setItem('masterclip.link', JSON.stringify({ link, paymentId, at: Date.now() }));
+    localStorage.removeItem(ORDER_KEY);
+  } catch { /* private mode */ }
+  window.location.replace('/MasterClipTool/download-ready#' + encodeURIComponent(link));
+}
+let checking = false;
+async function checkPending() {
+  const pending = savedOrder();
+  if (!pending || checking || Date.now() - pending.at > 2 * 86400000) return;
+  checking = true;
+  try {
+    const response = await fetch('/api/masterclip/recover', {
+      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ orderId: pending.orderId }),
+    });
+    const result = await response.json();
+    if (result.paid && result.link) { setStatus('Payment found ✓ Opening your download…'); deliver(result.link, result.paymentId); }
+  } catch { /* offline: try again later */ }
+  checking = false;
+}
+checkPending();
+document.addEventListener('visibilitychange', () => { if (!document.hidden) checkPending(); });
+setInterval(checkPending, 5000);

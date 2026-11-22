@@ -1,5 +1,6 @@
 import { constantTimeHexEqual, hmacHex, isPaymentCaptured, jsonResponse, razorpayAuth } from '../../_lib/razorpay.mjs';
 import { MASTERCLIP_AMOUNT_PAISE, masterclipEnabled, sameOrigin } from '../../_lib/masterclip.mjs';
+import { downloadLink } from '../../_lib/masterclip-token.mjs';
 
 export async function onRequestPost({ request, env }) {
   if (!sameOrigin(request)) return jsonResponse({ error: 'Payment verification was not accepted.' }, 403);
@@ -21,5 +22,5 @@ export async function onRequestPost({ request, env }) {
   const expires = Math.floor(Date.now() / 1000) + 86400;
   const payload = `${expires}.${crypto.randomUUID()}`;
   const token = `${payload}.${await hmacHex(env.RAZORPAY_KEY_SECRET, `masterclip-session|${payload}`)}`;
-  return jsonResponse({ ok: true }, 200, { 'set-cookie': `masterclip=${token}; Max-Age=86400; Path=/api/masterclip/download; Secure; HttpOnly; SameSite=Strict` });
+  return jsonResponse({ ok: true, link: await downloadLink(request, env, paymentId), paymentId }, 200, { 'set-cookie': `masterclip=${token}; Max-Age=86400; Path=/api/masterclip/download; Secure; HttpOnly; SameSite=Strict` });
 }

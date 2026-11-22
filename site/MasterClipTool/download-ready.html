@@ -8,6 +8,19 @@
   <title>Download MasterClip</title>
   <link rel="stylesheet" href="/styles.css">
   <link rel="stylesheet" href="/download-ready.css">
+  <style>
+    .link-box{display:flex;gap:8px;margin:14px 0 6px}
+    .link-box input{flex:1;min-width:0;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font:13px/1.3 ui-monospace,Consolas,monospace;background:#fbf8f5}
+    .link-box button,.recover button{padding:12px 16px;border:0;border-radius:10px;background:#1d1714;color:#fff;font-weight:700;cursor:pointer}
+    .ig-tip{margin:14px 0;padding:12px 14px;border-radius:12px;background:#fff4d6;color:#5a4300;font-size:14px;line-height:1.5;text-align:left}
+    .recover{margin-top:26px;padding-top:20px;border-top:1px dashed var(--line);text-align:left}
+    .recover h2{margin:0 0 6px;font-size:18px}
+    .recover p{margin:0 0 10px;color:var(--muted);font-size:13px;line-height:1.5}
+    .recover form{display:flex;gap:8px}
+    .recover input{flex:1;min-width:0;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font:inherit}
+    .recover .msg{margin-top:8px;font-size:13px}
+    .steps-after{margin:18px 0 0;padding:0;list-style:none;text-align:left;font-size:14px;line-height:1.7}
+  </style>
 </head>
 <body>
   <header class="topbar wrap">
@@ -17,13 +30,73 @@
   <main class="download-main wrap">
     <section class="download-card" aria-labelledby="download-title">
       <p class="eyebrow">MASTERCLIP · WINDOWS</p>
-      <h1 id="download-title">Download MasterClip.</h1>
-      <p class="download-intro">Use the same browser you paid with. Your verified purchase unlocks the download for 24 hours.</p>
+      <h1 id="download-title">Thank you! Download MasterClip.</h1>
+      <p class="download-intro" id="intro">Your payment is confirmed. Download the installer on your Windows PC.</p>
       <a class="button button-buy download-button" id="download-link" href="/api/masterclip/download">Download for Windows (.exe)</a>
-      <p class="download-hint" role="status">Run the installer, open MasterClip, paste a stream link. That's it.</p>
-      <div class="download-file"><span class="file-icon" aria-hidden="true">EXE</span><span><strong>MasterClip Setup</strong><small>Windows 10/11 installer · about 200 MB</small></span></div>
-      <p class="support-note">Already paid and the button says a purchase is required? <a href="mailto:anintellectualcompany.contact@gmail.com?subject=MasterClip%20download%20recovery">Email support</a> with your Razorpay payment reference and the email used at checkout. Please don’t pay again.</p>
+      <div id="link-wrap" hidden>
+        <p class="download-hint">Button not working, or you're on your phone? Copy this link and open it in Chrome on your PC. It works for 7 days.</p>
+        <div class="link-box"><input id="link-text" readonly aria-label="Your download link"><button type="button" id="copy">Copy</button></div>
+      </div>
+      <div class="ig-tip" id="ig-tip" hidden>📱 You're inside Instagram's browser. If the download doesn't start, tap <b>⋯</b> (top right) → <b>Open in external browser</b>, or copy the link above and paste it in Chrome.</div>
+      <ol class="steps-after">
+        <li>1. Run <b>MasterClipSetup.exe</b> (Windows may ask "Run anyway": click More info → Run anyway).</li>
+        <li>2. Open MasterClip and paste a stream link.</li>
+        <li>3. Pick a template and press <b>Find hype moments</b>. Done.</li>
+      </ol>
+      <div class="download-file"><span class="file-icon" aria-hidden="true">EXE</span><span><strong>MasterClip Setup</strong><small>Windows 10/11 installer</small></span></div>
+
+      <div class="recover" id="recover">
+        <h2>Paid but no download?</h2>
+        <p>Find your <b>payment ID</b> (starts with <b>pay_</b>) in the Razorpay SMS or email you got, paste it here and you'll get your link right away. Please don't pay again.</p>
+        <form id="recover-form"><input id="pay-id" placeholder="pay_XXXXXXXXXXXXXX" autocomplete="off" aria-label="Razorpay payment ID"><button type="submit">Get my link</button></form>
+        <p class="msg" id="recover-msg" role="status"></p>
+        <p class="support-note">Still stuck? Email <a href="mailto:anintellectualcompany.contact@gmail.com?subject=MasterClip%20download%20help">anintellectualcompany.contact@gmail.com</a> with your payment ID and we'll send the download link.</p>
+      </div>
     </section>
   </main>
+  <script>
+    (function () {
+      var $ = function (id) { return document.getElementById(id); };
+      function show(link) {
+        $('download-link').href = link;
+        $('link-text').value = link;
+        $('link-wrap').hidden = false;
+      }
+      var link = '';
+      try { link = decodeURIComponent((location.hash || '').slice(1)); } catch (e) {}
+      if (!/^https:\/\/[^ ]+\/api\/masterclip\/download\?t=/.test(link)) {
+        link = '';
+        try { var saved = JSON.parse(localStorage.getItem('masterclip.link') || 'null'); if (saved && saved.link) link = saved.link; } catch (e) {}
+      }
+      if (link) show(link);
+      else $('intro').textContent = 'Paid on this browser? Press Download. Paid somewhere else (Instagram, UPI app)? Use "Paid but no download?" below.';
+      if (/Instagram|FBAN|FBAV/i.test(navigator.userAgent)) $('ig-tip').hidden = false;
+      $('copy').addEventListener('click', function () {
+        var input = $('link-text');
+        input.select();
+        var done = function () { $('copy').textContent = 'Copied ✓'; };
+        if (navigator.clipboard) navigator.clipboard.writeText(input.value).then(done, function () { document.execCommand('copy'); done(); });
+        else { document.execCommand('copy'); done(); }
+      });
+      $('recover-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var id = $('pay-id').value.trim();
+        var msg = $('recover-msg');
+        if (!/^pay_/.test(id)) { msg.textContent = 'The payment ID starts with pay_. Check your Razorpay SMS or email.'; return; }
+        msg.textContent = 'Checking your payment…';
+        fetch('/api/masterclip/recover', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ paymentId: id }) })
+          .then(function (r) { return r.json(); })
+          .then(function (res) {
+            if (res.paid && res.link) {
+              try { localStorage.setItem('masterclip.link', JSON.stringify({ link: res.link, paymentId: res.paymentId, at: Date.now() })); } catch (e) {}
+              show(res.link);
+              msg.textContent = '✅ Found it! Your download link is ready above.';
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else msg.textContent = res.error || 'We could not find that payment. Email us and we will help.';
+          })
+          .catch(function () { msg.textContent = 'Could not check right now. Try again in a minute or email us.'; });
+      });
+    })();
+  </script>
 </body>
 </html>
