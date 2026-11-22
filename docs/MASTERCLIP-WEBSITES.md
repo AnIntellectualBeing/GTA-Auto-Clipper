@@ -1,4 +1,4 @@
-﻿# MasterClip website deployment
+# MasterClip website deployment
 
 Updated 2026-11-22.
 
@@ -18,7 +18,8 @@ Deploy: npx wrangler pages deploy dist --project-name anintellectualcompany --br
 MasterPrompt source for this change: Z:/Projects/deliverables/masterclip-sales
 Cloudflare Pages project: gta-auto-clipper
 Tests from site/: npm test
-Deploy from repository root: npx wrangler pages deploy site --project-name gta-auto-clipper --branch main
+Deploy from site/: npx wrangler pages deploy . --project-name gta-auto-clipper --branch main
+IMPORTANT: run inside site/ so Wrangler discovers site/functions and uploads the payment Functions bundle. A deploy from the repository root omits these functions.
 
 The source branch is masterclip-page. Keep its changes in the canonical remote main before deploying older worktrees. The separate Z:/Projects/GTA-Auto-Clipper main worktree had pre-existing uncommitted changes during this task; do not overwrite or deploy that stale worktree without reconciling it.
 
