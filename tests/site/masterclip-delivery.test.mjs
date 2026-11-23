@@ -215,3 +215,33 @@ test('the guide can be served from Workers KV when there is no R2 bucket', async
   const missing = await guide({ env: { ...kvEnv, MASTERCLIP_GUIDE_KEY: 'nope.pdf' }, request: await guideReq(`?token=${token}`) });
   assert.equal(missing.status, 503);
 });
+
+test('an authorized-only ₹349 payment on a MasterClip order is captured by us and delivered', async () => {
+  const { confirmCheckout, paidPaymentOfOrder } = await import('../../site/functions/_lib/masterclip-token.mjs');
+  const realFetch = globalThis.fetch;
+  const calls = [];
+  let status = 'authorized';
+  globalThis.fetch = async (url, init = {}) => {
+    const u = String(url); calls.push(`${init.method || 'GET'} ${u}`);
+    const json = (body) => new Response(JSON.stringify(body), { status: 200, headers: { 'content-type': 'application/json' } });
+    const payment = () => ({ id: 'pay_auth1234567', order_id: 'order_auth123456', amount: 34900, currency: 'INR', status, email: 'a@b.co' });
+    if (u.endsWith('/capture')) { status = 'captured'; return json(payment()); }
+    if (u.includes('/orders/order_auth123456/payments')) return json({ items: [payment()] });
+    if (u.includes('/orders/order_auth123456')) return json({ id: 'order_auth123456', notes: { product: 'masterclip-windows' } });
+    if (u.includes('/payments/pay_auth1234567')) return json(payment());
+    return new Response('{}', { status: 404 });
+  };
+  try {
+    const { hmacHex } = await import('../../site/functions/_lib/razorpay.mjs');
+    const signature = await hmacHex(env.RAZORPAY_KEY_SECRET, 'order_auth123456|pay_auth1234567');
+    const result = await confirmCheckout(env, { orderId: 'order_auth123456', paymentId: 'pay_auth1234567', signature });
+    assert.equal(result.status, 'ok');
+    assert.equal(result.payment.status, 'captured');
+    assert.ok(calls.some((c) => c.startsWith('POST') && c.endsWith('/payments/pay_auth1234567/capture')));
+    status = 'authorized';
+    const viaOrder = await paidPaymentOfOrder(env, 'order_auth123456');
+    assert.equal(viaOrder?.status, 'captured');
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+});
