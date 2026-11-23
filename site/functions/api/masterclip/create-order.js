@@ -1,5 +1,12 @@
 import { jsonResponse, orderNotes, razorpayAuth } from '../../_lib/razorpay.mjs';
-import { MASTERCLIP_AMOUNT_PAISE, MASTERCLIP_PRODUCT, masterclipEnabled, sameOrigin } from '../../_lib/masterclip.mjs';
+import { MASTERCLIP_AMOUNT_PAISE, MASTERCLIP_PRODUCT, cleanEmail, cleanPhone, masterclipEnabled, sameOrigin } from '../../_lib/masterclip.mjs';
+
+// The buyer's email/phone go into the order notes so the access link can be recovered later.
+function buyerNotes(notes, input) {
+  const email = cleanEmail(input?.email);
+  const phone = cleanPhone(input?.phone);
+  return { ...notes, ...(email && { buyer_email: email }), ...(phone && { buyer_phone: phone }) };
+}
 
 export async function onRequestPost({ request, env }) {
   if (!sameOrigin(request)) return jsonResponse({ error: 'Checkout request was not accepted.' }, 403);
@@ -14,7 +21,7 @@ export async function onRequestPost({ request, env }) {
         amount: MASTERCLIP_AMOUNT_PAISE,
         currency: 'INR',
         receipt,
-        notes: orderNotes(MASTERCLIP_PRODUCT, input, env),
+        notes: buyerNotes(orderNotes(MASTERCLIP_PRODUCT, input, env), input),
       }),
     });
     if (!response.ok) return jsonResponse({ error: 'Could not start checkout. Please try again.' }, 502);

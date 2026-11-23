@@ -1,26 +1,23 @@
-import { constantTimeHexEqual, hmacHex, isPaymentCaptured, jsonResponse, razorpayAuth } from '../../_lib/razorpay.mjs';
-import { MASTERCLIP_AMOUNT_PAISE, masterclipEnabled, sameOrigin } from '../../_lib/masterclip.mjs';
-import { downloadLink } from '../../_lib/masterclip-token.mjs';
+import { jsonResponse } from '../../_lib/razorpay.mjs';
+import { masterclipDeliveryEnabled, sameOrigin } from '../../_lib/masterclip.mjs';
+import { confirmCheckout } from '../../_lib/masterclip-token.mjs';
+import { accessUrl } from '../../_lib/masterclip-access.mjs';
+import { emailAfterCheckout } from '../../_lib/masterclip-email.mjs';
 
-export async function onRequestPost({ request, env }) {
+// Razorpay checkout handler result -> durable access link. No cookies: the page navigates to the
+// link, so a reload, a lost session or a different browser still works.
+export async function onRequestPost(context) {
+  const { request, env } = context;
   if (!sameOrigin(request)) return jsonResponse({ error: 'Payment verification was not accepted.' }, 403);
-  if (!masterclipEnabled(env)) return jsonResponse({ error: 'Delivery is being configured.' }, 503);
-  let body;
-  try { body = await request.json(); } catch { return jsonResponse({ error: 'Invalid payment response.' }, 400); }
-  const { razorpay_order_id: orderId, razorpay_payment_id: paymentId, razorpay_signature: signature } = body || {};
-  if (![orderId, paymentId, signature].every((value) => typeof value === 'string' && value.length > 0 && value.length < 256)) {
-    return jsonResponse({ error: 'Payment verification failed.' }, 400);
-  }
-  const expected = await hmacHex(env.RAZORPAY_KEY_SECRET, `${orderId}|${paymentId}`);
-  if (!constantTimeHexEqual(expected, signature)) return jsonResponse({ error: 'Payment verification failed.' }, 400);
-  try {
-    const response = await fetch(`https://api.razorpay.com/v1/payments/${encodeURIComponent(paymentId)}`, { headers: { authorization: razorpayAuth(env) } });
-    if (!response.ok || !isPaymentCaptured(await response.json(), orderId, MASTERCLIP_AMOUNT_PAISE)) return jsonResponse({ error: 'Payment is not confirmed yet. Contact support if your account was charged.' }, 402);
-  } catch {
-    return jsonResponse({ error: 'Could not confirm payment. Please retry in a moment.' }, 502);
-  }
-  const expires = Math.floor(Date.now() / 1000) + 86400;
-  const payload = `${expires}.${crypto.randomUUID()}`;
-  const token = `${payload}.${await hmacHex(env.RAZORPAY_KEY_SECRET, `masterclip-session|${payload}`)}`;
-  return jsonResponse({ ok: true, link: await downloadLink(request, env, paymentId), paymentId }, 200, { 'set-cookie': `masterclip=${token}; Max-Age=86400; Path=/api/masterclip/download; Secure; HttpOnly; SameSite=Strict` });
+  if (!masterclipDeliveryEnabled(env)) return jsonResponse({ error: 'Delivery is being configured.' }, 503);
+  const body = await request.json().catch(() => null);
+  const result = await confirmCheckout(env, {
+    orderId: body?.razorpay_order_id, paymentId: body?.razorpay_payment_id, signature: body?.razorpay_signature,
+  });
+  if (result.status === 'invalid') return jsonResponse({ error: 'Payment verification failed.' }, 400);
+  if (result.status === 'error') return jsonResponse({ error: 'Could not confirm payment. Please retry in a moment.' }, 502);
+  if (result.status === 'pending') return jsonResponse({ pending: true, orderId: body.razorpay_order_id, paymentId: body.razorpay_payment_id }, 202);
+  const link = await accessUrl(request, env, result.payment.id);
+  emailAfterCheckout(context, env, result.payment, link);
+  return jsonResponse({ ok: true, accessUrl: link, link, paymentId: result.payment.id });
 }

@@ -43,10 +43,6 @@ Razorpay orders include the product and, when present, `notes.referral_code`. Us
 
 The MasterClip page at `/MasterClipTool/` uses the same Razorpay key pair and the same `?ref=` referral flow as the other products. The server fixes the price at ₹349 (`MASTERCLIP_AMOUNT_PAISE = 34900` in `site/functions/_lib/masterclip.mjs`) and tags orders with `notes.product = masterclip-windows`.
 
-After a verified, captured payment the buyer gets a 24-hour signed cookie and lands on `/MasterClipTool/download-ready`. Its button calls `/api/masterclip/download`, which redirects to the URL in the Pages variable `MASTERCLIP_DOWNLOAD_URL` (https only). Checkout stays off (503 "being configured") until that variable is set:
-
-```powershell
-npx wrangler pages secret put MASTERCLIP_DOWNLOAD_URL --project-name gta-auto-clipper
-```
+The ₹349 now buys the MasterClip Complete Guide PDF (private, in R2) plus extras and support; the app itself is free. After a verified, captured payment the buyer is sent to a durable access page `/MasterClipTool/access?token=…` (HMAC token, 1 year) with the guide and the installer. No cookies. Full flow, owner setup (R2 bucket + binding, secrets, optional Resend email and webhook) and Instagram testing: see `docs/DELIVERY-FLOW.md`. `MASTERCLIP_DOWNLOAD_URL` is now optional (defaults to the latest GitHub release); checkout needs the `MASTERCLIP_FILES` R2 binding.
 
 Referral links: `https://masterprompt.anintellectualcompany.com/MasterClipTool/?ref=<code>`. See `docs/MasterClip-referral-links.txt`. If `REFERRAL_CODES` is set, add any new code (for example `akshat`) to it.

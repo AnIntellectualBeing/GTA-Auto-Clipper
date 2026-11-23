@@ -5,7 +5,7 @@ Updated 2026-11-22.
 ## Product split
 
 - Company: https://anintellectualcompany.com/software/MasterClip-Tool/ is a free direct installer download. No payment flow, mockup, screenshot gallery or examples on this page.
-- MasterPrompt: https://masterprompt.anintellectualcompany.com/MasterClipTool/ retains the optional INR 349 Razorpay purchase, payment recovery, and app screenshots. It links back to the free version so buyers understand the purchase does not unlock exclusive features.
+- MasterPrompt: https://masterprompt.anintellectualcompany.com/MasterClipTool/ sells the INR 349 MasterClip Complete Guide (PDF + bonus extras + email support) via Razorpay, with payment recovery and app screenshots. The app stays free and the page links to the free version. Delivery flow (2026-11-23): docs/DELIVERY-FLOW.md.
 - The existing INR 149 prompt product at the MasterPrompt homepage is preserved. Navigation and an introductory link lead to MasterClip.
 
 ## Source and hosting
