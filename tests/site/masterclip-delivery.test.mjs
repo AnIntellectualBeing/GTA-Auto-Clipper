@@ -200,3 +200,18 @@ test('the webhook checks the Razorpay signature and emails the access link once'
   assert.deepEqual(JSON.parse(mail.init.body).to, ['buyer@example.com']);
   assert.equal((await send(await hmacHex('whsec', raw), env)).status, 404, 'off without the webhook secret');
 });
+
+test('the guide can be served from Workers KV when there is no R2 bucket', async () => {
+  const kv = { async get(k, type) { return k === 'MasterClip-Guide.pdf' && type === 'arrayBuffer' ? PDF.buffer.slice(PDF.byteOffset, PDF.byteOffset + PDF.byteLength) : null; } };
+  const kvEnv = { ...env, MASTERCLIP_FILES: undefined, MASTERCLIP_KV: kv };
+  const token = encodeURIComponent(await signAccessToken(kvEnv, PAY));
+  const full = await guide({ env: kvEnv, request: await guideReq(`?token=${token}`) });
+  assert.equal(full.status, 200);
+  assert.equal(full.headers.get('content-length'), String(PDF.length));
+  assert.deepEqual(new Uint8Array(await full.arrayBuffer()), PDF);
+  const part = await guide({ env: kvEnv, request: await guideReq(`?token=${token}`, { range: 'bytes=0-7' }) });
+  assert.equal(part.status, 206);
+  assert.equal(new TextDecoder().decode(await part.arrayBuffer()), '%PDF-1.4');
+  const missing = await guide({ env: { ...kvEnv, MASTERCLIP_GUIDE_KEY: 'nope.pdf' }, request: await guideReq(`?token=${token}`) });
+  assert.equal(missing.status, 503);
+});

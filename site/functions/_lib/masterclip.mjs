@@ -14,10 +14,32 @@ export function masterclipDownloadUrl(env) {
   return MASTERCLIP_INSTALLER_URL;
 }
 
-// The private guide PDF lives in an R2 bucket bound to the Pages project as MASTERCLIP_FILES.
+// The private guide PDF lives in an R2 bucket bound to the Pages project as MASTERCLIP_FILES,
+// or (no R2 on the account) in a Workers KV namespace bound as MASTERCLIP_KV. KV values go up to
+// 25 MB, enough for the guide. The KV store is wrapped in the small part of the R2 API we use.
+export function kvAsBucket(kv) {
+  const load = (key) => kv.get(key, 'arrayBuffer');
+  return {
+    async head(key) {
+      const data = await load(key);
+      return data ? { size: data.byteLength } : null;
+    },
+    async get(key, options = {}) {
+      const data = await load(key);
+      if (!data) return null;
+      const range = options.range;
+      const body = range ? new Uint8Array(data, range.offset, range.length) : new Uint8Array(data);
+      return { body };
+    },
+  };
+}
+
 export function guideBucket(env) {
   const bucket = env.MASTERCLIP_FILES;
-  return bucket && typeof bucket.get === 'function' ? bucket : null;
+  if (bucket && typeof bucket.get === 'function' && typeof bucket.head === 'function') return bucket;
+  const kv = env.MASTERCLIP_KV;
+  if (kv && typeof kv.get === 'function') return kvAsBucket(kv);
+  return null;
 }
 
 export function guideKey(env) {

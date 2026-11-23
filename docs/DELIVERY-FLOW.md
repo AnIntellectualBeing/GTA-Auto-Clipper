@@ -79,7 +79,18 @@ Referral codes (`?ref=`) and the ₹149 guide / verticalclipper products are unc
 
 Security trade-off: email/phone recovery shows the link on screen, as the owner asked. Anyone who knows a buyer's email or phone could get that buyer's guide link. This is rate limited, and the link only unlocks a ₹349 PDF.
 
-## Owner one-time setup
+## Live setup (24 Nov 2026)
+
+R2 is not enabled on the account (it needs a card), so the guide is stored in **Workers KV** instead:
+namespace `MASTERCLIP_GUIDE` (id `c9f046ca945741f4a99c059fe7e212b4`), key `MasterClip-Guide.pdf`, bound to the
+Pages project as `MASTERCLIP_KV` (production + preview). The code uses R2 (`MASTERCLIP_FILES`) if it is ever
+bound, otherwise KV. `MASTERCLIP_ACCESS_SECRET` is set. Update the guide with:
+
+```powershell
+npx wrangler kv key put MasterClip-Guide.pdf --path "Z:\Projects\deliverables\masterclip-guide\out\MasterClip-Guide.pdf" --namespace-id c9f046ca945741f4a99c059fe7e212b4 --remote
+```
+
+## Owner one-time setup (original R2 plan)
 
 Run these from `Z:\Projects\deliverables\masterclip-sales\site` in PowerShell, logged in with `npx wrangler login`. Nothing here has been run against your account.
 
