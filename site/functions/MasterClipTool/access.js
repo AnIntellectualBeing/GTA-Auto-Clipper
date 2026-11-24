@@ -82,7 +82,11 @@ export async function onRequestGet({ request, env }) {
       <div class="dl-stack">
         <a class="button button-dark" href="${esc(installer)}" rel="noreferrer">Download MasterClip for Windows (.exe)<small>Windows 10/11 PC · about 337 MB</small></a>
       </div>
-      <p class="dl-label">3 · SOURCE CODE (FOR DEVELOPERS)</p>
+      <p class="dl-label">3 · START HERE (BEGINNER STEPS, .TXT)</p>
+      <div class="dl-stack">
+        <a class="button button-secondary" href="/MasterClipTool/START-HERE.txt" download="MasterClip-START-HERE.txt">Download START-HERE.txt</a>
+      </div>
+      <p class="dl-label">4 · SOURCE CODE (FOR DEVELOPERS)</p>
       <div class="dl-stack">
         <a class="button button-secondary" href="https://github.com/AnIntellectualBeing/MasterClip/archive/refs/heads/main.zip" rel="noreferrer">Download the source code (.zip)</a>
         <a class="button button-secondary" href="https://github.com/AnIntellectualBeing/MasterClip" rel="noreferrer" target="_blank">Open the code on GitHub</a>
