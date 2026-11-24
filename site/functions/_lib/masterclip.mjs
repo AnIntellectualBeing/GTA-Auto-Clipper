@@ -4,6 +4,8 @@ export const MASTERCLIP_INSTALLER_URL = 'https://github.com/AnIntellectualBeing/
 export const SUPPORT_EMAIL = 'anintellectualcompany.contact@gmail.com';
 export const GUIDE_DEFAULT_KEY = 'MasterClip-Guide.pdf';
 export const GUIDE_FILENAME = 'MasterClip-Complete-Guide.pdf';
+export const KIT_KEY = 'MasterClip-Kit.zip';
+export const KIT_FILENAME = 'MasterClip-Kit.zip';
 
 // The installer is the free public GitHub release. MASTERCLIP_DOWNLOAD_URL can override it (https only).
 export function masterclipDownloadUrl(env) {

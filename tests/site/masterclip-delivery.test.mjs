@@ -245,3 +245,15 @@ test('an authorized-only ₹349 payment on a MasterClip order is captured by us 
     globalThis.fetch = realFetch;
   }
 });
+
+test('file=kit serves the all-in-one ZIP as an attachment', async () => {
+  const ZIP = new TextEncoder().encode('PK\u0003\u0004 fake kit');
+  const kitEnv = { ...env, MASTERCLIP_FILES: fakeBucket(ZIP, 'MasterClip-Kit.zip') };
+  const token = encodeURIComponent(await signAccessToken(kitEnv, PAY));
+  const res = await guide({ env: kitEnv, request: await guideReq(`?token=${token}&file=kit`) });
+  assert.equal(res.status, 200);
+  assert.equal(res.headers.get('content-type'), 'application/zip');
+  assert.equal(res.headers.get('content-disposition'), 'attachment; filename="MasterClip-Kit.zip"');
+  const noToken = await guide({ env: kitEnv, request: await guideReq('?token=bad&file=kit') });
+  assert.equal(noToken.status, 401);
+});

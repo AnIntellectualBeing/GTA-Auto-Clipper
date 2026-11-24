@@ -1,4 +1,4 @@
-import { GUIDE_FILENAME, SUPPORT_EMAIL, guideBucket, guideKey } from '../../_lib/masterclip.mjs';
+import { KIT_FILENAME, KIT_KEY, GUIDE_FILENAME, SUPPORT_EMAIL, guideBucket, guideKey } from '../../_lib/masterclip.mjs';
 import { verifyAccessToken } from '../../_lib/masterclip-access.mjs';
 
 // The private guide PDF, streamed from R2 only for a valid access token.
@@ -34,15 +34,17 @@ async function serve(request, env, headOnly) {
   if (!paymentId) return text(`This guide link is not valid or has expired. Get a fresh link at https://masterprompt.anintellectualcompany.com/MasterClipTool/download-ready with your payment ID (pay_...), or email ${SUPPORT_EMAIL}.`, 401);
   const bucket = guideBucket(env);
   if (!bucket) return text(`The guide is temporarily unavailable. Please try again soon, or email ${SUPPORT_EMAIL} with your payment ID (${paymentId}) and we will send it.`, 503);
-  const key = guideKey(env);
+  // ?file=kit -> the all-in-one ZIP (guide PDF + START-HERE.txt + download/support shortcuts).
+  const kit = params.get('file') === 'kit';
+  const key = kit ? KIT_KEY : guideKey(env);
   const head = await bucket.head(key);
   if (!head) return text(`The guide file is being updated. Please try again in a little while, or email ${SUPPORT_EMAIL} with your payment ID (${paymentId}) and we will send it.`, 503);
   const size = head.size;
   const range = request.headers.get('range') ? parseRange(request.headers.get('range'), size) : null;
   const disposition = params.get('inline') === '1' ? 'inline' : 'attachment';
   const headers = new Headers({
-    'content-type': 'application/pdf',
-    'content-disposition': `${disposition}; filename="${GUIDE_FILENAME}"`,
+    'content-type': kit ? 'application/zip' : 'application/pdf',
+    'content-disposition': kit ? `attachment; filename="${KIT_FILENAME}"` : `${disposition}; filename="${GUIDE_FILENAME}"`,
     'accept-ranges': 'bytes',
     'cache-control': 'private, no-store',
     'referrer-policy': 'no-referrer',

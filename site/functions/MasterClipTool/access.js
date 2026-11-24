@@ -72,6 +72,11 @@ export async function onRequestGet({ request, env }) {
       <h1>Thank you! Your downloads are ready.</h1>
       <p class="download-intro">This page is yours. Bookmark it or save the link below: it works on any phone or PC, in any browser.</p>
       ${inAppTip(request)}
+      <p class="dl-label">EVERYTHING IN ONE (.ZIP)</p>
+      <div class="dl-stack">
+        <a class="button button-buy" href="${esc(guide)}&amp;file=kit" download>Download everything (.zip)<b>↓</b></a>
+      </div>
+      <p class="download-hint">The guide PDF, START-HERE.txt, and shortcuts to the Windows app, the source code and support. The app itself (337 MB) downloads from the shortcut or the button below. Or get each file on its own:</p>
       <p class="dl-label">1 · THE COMPLETE GUIDE (PDF)</p>
       <div class="dl-stack">
         <a class="button button-buy" href="${esc(guide)}" download>Download the guide (PDF)<b>↓</b></a>
@@ -82,6 +87,7 @@ export async function onRequestGet({ request, env }) {
       <div class="dl-stack">
         <a class="button button-dark" href="${esc(installer)}" rel="noreferrer">Download MasterClip for Windows (.exe)<small>Windows 10/11 PC · about 337 MB</small></a>
       </div>
+      <p class="download-hint">Installer not working? Get the newest version from the official site: <a href="https://anintellectualcompany.com/software/MasterClip-Tool/" rel="noreferrer" target="_blank">anintellectualcompany.com/software/MasterClip-Tool</a></p>
       <p class="dl-label">3 · START HERE (BEGINNER STEPS, .TXT)</p>
       <div class="dl-stack">
         <a class="button button-secondary" href="/MasterClipTool/START-HERE.txt" download="MasterClip-START-HERE.txt">Download START-HERE.txt</a>
