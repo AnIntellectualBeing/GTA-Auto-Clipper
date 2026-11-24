@@ -257,3 +257,30 @@ test('file=kit serves the all-in-one ZIP as an attachment', async () => {
   const noToken = await guide({ env: kitEnv, request: await guideReq('?token=bad&file=kit') });
   assert.equal(noToken.status, 401);
 });
+
+test('referral report counts paid MasterClip sales per code and hides itself without the key', async () => {
+  const { referralReport, onRequestGet: report } = await import('../../site/functions/api/masterclip/referrals.js');
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async (url) => {
+    const u = String(url); const json = (b) => new Response(JSON.stringify(b), { status: 200 });
+    if (u.includes('/payments?')) return json({ items: [
+      { id: 'pay_1', status: 'captured', amount: 34900, order_id: 'order_a', created_at: 1, amount_refunded: 0 },
+      { id: 'pay_2', status: 'captured', amount: 34900, order_id: 'order_b', created_at: 2, amount_refunded: 0 },
+      { id: 'pay_3', status: 'captured', amount: 34900, order_id: 'order_c', created_at: 3, amount_refunded: 34900 },
+      { id: 'pay_4', status: 'failed', amount: 34900, order_id: 'order_a', created_at: 4 },
+      { id: 'pay_5', status: 'captured', amount: 14900, order_id: 'order_x', created_at: 5 },
+    ] });
+    const notes = { order_a: { product: 'masterclip-windows', referral_code: 'aka' }, order_b: { product: 'masterclip-windows', referral_code: 'aka' }, order_c: { product: 'masterclip-windows', referral_code: 'negi' } };
+    const id = u.split('/orders/')[1];
+    return json({ id, notes: notes[id] || {} });
+  };
+  try {
+    const rows = await referralReport(env);
+    assert.deepEqual(rows.map((r) => [r.code, r.sales, r.refunded]), [['aka', 2, 0], ['negi', 0, 1]]);
+    const hidden = await report({ env: { ...env, MASTERCLIP_REPORT_KEY: 'k'.repeat(20) }, request: new Request('https://x.test/api/masterclip/referrals?key=wrong') });
+    assert.equal(hidden.status, 404);
+    const shown = await report({ env: { ...env, MASTERCLIP_REPORT_KEY: 'k'.repeat(20) }, request: new Request(`https://x.test/api/masterclip/referrals?key=${'k'.repeat(20)}`) });
+    assert.equal(shown.status, 200);
+    assert.match(await shown.text(), /aka/);
+  } finally { globalThis.fetch = realFetch; }
+});
