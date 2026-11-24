@@ -82,6 +82,12 @@ export async function onRequestGet({ request, env }) {
       <div class="dl-stack">
         <a class="button button-dark" href="${esc(installer)}" rel="noreferrer">Download MasterClip for Windows (.exe)<small>Windows 10/11 PC · about 337 MB</small></a>
       </div>
+      <p class="dl-label">3 · SOURCE CODE (FOR DEVELOPERS)</p>
+      <div class="dl-stack">
+        <a class="button button-secondary" href="https://github.com/AnIntellectualBeing/MasterClip/archive/refs/heads/main.zip" rel="noreferrer">Download the source code (.zip)</a>
+        <a class="button button-secondary" href="https://github.com/AnIntellectualBeing/MasterClip" rel="noreferrer" target="_blank">Open the code on GitHub</a>
+      </div>
+      <p class="download-hint">Only needed if you want to build or change the app yourself. Everyone else: use the .exe above.</p>
       <ol class="steps-after">
         <li>1. On your Windows PC, run <b>MasterClipSetup.exe</b>. If Windows says "unknown publisher", click <b>More info → Run anyway</b>.</li>
         <li>2. Open the guide and follow it step by step.</li>

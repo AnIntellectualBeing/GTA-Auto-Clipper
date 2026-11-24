@@ -174,3 +174,7 @@ footer a{text-decoration:none}footer a:hover{color:var(--red-dark)}
   .price strong{font-size:44px}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+.top-actions{display:flex;align-items:center;gap:14px}.top-paid{font-size:14px;font-weight:700;color:var(--muted);text-decoration:none}.top-paid:hover{color:var(--red-dark)}
+.paid-link{display:inline-block;margin-top:2px;padding:10px 14px;border-radius:10px;background:#eaf5ec;color:#245f30;font-weight:800;font-size:14px;text-decoration:none}.paid-link:hover{background:#dcefe0}
+@media(max-width:420px){.top-paid{font-size:12px}}
