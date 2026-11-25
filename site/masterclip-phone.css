@@ -1,0 +1,16 @@
+/* MasterClip for Android page: extras on top of masterclip-page.css */
+.phone-tag{font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;background:var(--tint);color:var(--red-dark);border-radius:999px;padding:3px 8px;margin-left:6px;vertical-align:middle}
+.extras.three{grid-template-columns:repeat(3,1fr)}
+.phone-art{display:flex;justify-content:center}
+.phone{width:260px;max-width:72vw;aspect-ratio:9/19;background:var(--dark);border-radius:38px;padding:12px;box-shadow:0 30px 70px rgba(60,25,10,.22)}
+.phone-screen{height:100%;background:var(--paper);border-radius:28px;padding:16px 14px;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+.ph-bar{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--muted)}
+.ph-bar b{font:700 15px var(--display);color:var(--ink)}
+.ph-clip{flex:1;border-radius:16px;overflow:hidden;display:grid;grid-template-rows:38% 1fr;position:relative;min-height:0}
+.ph-cam{background:radial-gradient(circle at 50% 60%,#f2c9a8 0 18%,#8a5a44 19% 26%,#3a2e2a 27%)}
+.ph-game{background:linear-gradient(160deg,#2c5d8f,#1b3550 55%,#3f7a3a)}
+.ph-cap{position:absolute;left:0;right:0;top:41%;text-align:center;font:800 17px var(--display);color:#fff;text-shadow:0 2px 0 #000,0 0 6px #000}
+.ph-cap em{font-style:normal;color:#ffd84a}
+.ph-row{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 11px;font-size:12px;color:var(--ink)}
+.ph-post{background:var(--red);color:#fff;border-radius:8px;padding:4px 10px;font-weight:700}
+@media (max-width:860px){.extras.three{grid-template-columns:1fr}}

@@ -284,3 +284,27 @@ test('referral report counts paid MasterClip sales per code and hides itself wit
     assert.match(await shown.text(), /aka/);
   } finally { globalThis.fetch = realFetch; }
 });
+
+// ---------- Android APK (sold, stored in KV parts)
+
+test('the Android APK streams its KV parts only for a valid token', async () => {
+  const { onRequestGet: apk, onRequestHead: apkHead } = await import('../../site/functions/api/masterclip/apk.js');
+  const parts = [new TextEncoder().encode('PK-part-0|'), new TextEncoder().encode('part-1')];
+  const store = { 'MasterClip-Android.apk.meta': { parts: 2, size: 16, version: '1.2.0', filename: 'MasterClip-1.2.0.apk' } };
+  parts.forEach((p, i) => { store[`MasterClip-Android.apk.${i}`] = p.buffer; });
+  const kv = { async get(k, type) { const v = store[k]; if (v === undefined) return null; return type === 'json' ? v : v; } };
+  const kvEnv = { ...env, MASTERCLIP_KV: kv };
+  const token = encodeURIComponent(await signAccessToken(kvEnv, PAY));
+  const req = (q, method = 'GET') => new Request(`${origin}/api/masterclip/apk${q}`, { method });
+  const ok = await apk({ env: kvEnv, request: req(`?token=${token}`) });
+  assert.equal(ok.status, 200);
+  assert.equal(ok.headers.get('content-type'), 'application/vnd.android.package-archive');
+  assert.match(ok.headers.get('content-disposition'), /MasterClip-1\.2\.0\.apk/);
+  assert.equal(await ok.text(), 'PK-part-0|part-1');
+  const head = await apkHead({ env: kvEnv, request: req(`?token=${token}`, 'HEAD') });
+  assert.equal(head.headers.get('content-length'), '16');
+  assert.equal((await apk({ env: kvEnv, request: req('?token=bad') })).status, 401);
+  assert.equal((await apk({ env: { ...env, MASTERCLIP_KV: { async get() { return null; } } }, request: req(`?token=${token}`) })).status, 503);
+  const page = await accessPage({ env: kvEnv, request: new Request(`${origin}/MasterClipTool/access?token=${token}`) });
+  assert.match(await page.text(), /\/api\/masterclip\/apk\?token=/);
+});

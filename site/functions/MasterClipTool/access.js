@@ -65,13 +65,19 @@ export async function onRequestGet({ request, env }) {
   const url = `${self.origin}/MasterClipTool/access?token=${encodeURIComponent(token)}`;
   const guide = `/api/masterclip/guide?token=${encodeURIComponent(token)}`;
   const installer = masterclipDownloadUrl(env);
-  const share = encodeURIComponent(`My MasterClip downloads (guide + installer): ${url}`);
+  const apk = `/api/masterclip/apk?token=${encodeURIComponent(token)}`;
+  const share = encodeURIComponent(`My MasterClip downloads (Android app, guide + Windows app): ${url}`);
   return new Response(page('Your MasterClip downloads', `
       <div class="download-check" aria-hidden="true">✓</div>
       <p class="eyebrow">MASTERCLIP · YOUR DOWNLOADS</p>
       <h1>Thank you! Your downloads are ready.</h1>
       <p class="download-intro">This page is yours. Bookmark it or save the link below: it works on any phone or PC, in any browser.</p>
       ${inAppTip(request)}
+      <p class="dl-label">MASTERCLIP FOR ANDROID (PHONE APP, .APK)</p>
+      <div class="dl-stack">
+        <a class="button button-buy" href="${esc(apk)}" download>Download MasterClip for Android<b>↓</b><small>Android 8 or newer · about 70 MB</small></a>
+      </div>
+      <p class="download-hint">On the phone: open the downloaded file, allow "Install unknown apps" for Chrome when Android asks, then tap Install. If Play Protect warns, tap <b>More details → Install anyway</b>. Please don't share the file: it's sold only here.</p>
       <p class="dl-label">EVERYTHING IN ONE (.ZIP)</p>
       <div class="dl-stack">
         <a class="button button-buy" href="${esc(guide)}&amp;file=kit" download>Download everything (.zip)<b>↓</b></a>

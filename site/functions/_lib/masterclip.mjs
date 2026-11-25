@@ -6,6 +6,10 @@ export const GUIDE_DEFAULT_KEY = 'MasterClip-Guide.pdf';
 export const GUIDE_FILENAME = 'MasterClip-Complete-Guide.pdf';
 export const KIT_KEY = 'MasterClip-Kit.zip';
 export const KIT_FILENAME = 'MasterClip-Kit.zip';
+// The Android APK is sold, never public. It is too big for one KV value (25 MB), so it is stored
+// as numbered parts plus a JSON meta key: { parts, size, version, filename }.
+export const APK_META_KEY = 'MasterClip-Android.apk.meta';
+export const apkPartKey = (index) => `MasterClip-Android.apk.${index}`;
 
 // The installer is the free public GitHub release. MASTERCLIP_DOWNLOAD_URL can override it (https only).
 export function masterclipDownloadUrl(env) {
