@@ -18,6 +18,12 @@ https://masterprompt.anintellectualcompany.com/MasterClipPhone/?ref=akshat
 Nexo
 https://masterprompt.anintellectualcompany.com/MasterClipPhone/?ref=nexo
 
+Sarthak
+https://masterprompt.anintellectualcompany.com/MasterClipPhone/?ref=sarthak
+
+Negi
+https://masterprompt.anintellectualcompany.com/MasterClipPhone/?ref=negi
+
 === WINDOWS KIT, Rs 349 (/MasterClipTool/) ===
 
 Tushar
@@ -31,6 +37,12 @@ https://masterprompt.anintellectualcompany.com/MasterClipTool/?ref=akshat
 
 Nexo
 https://masterprompt.anintellectualcompany.com/MasterClipTool/?ref=nexo
+
+Sarthak
+https://masterprompt.anintellectualcompany.com/MasterClipTool/?ref=sarthak
+
+Negi
+https://masterprompt.anintellectualcompany.com/MasterClipTool/?ref=negi
 
 === Tracking ===
 Razorpay dashboard: Transactions -> Orders -> open an order -> Notes shows
