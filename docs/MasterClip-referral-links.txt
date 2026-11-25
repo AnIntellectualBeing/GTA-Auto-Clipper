@@ -1,7 +1,24 @@
-﻿MasterClip referral links (₹349 page)
+﻿MasterClip referral links
 
-Paste the full URL including ?ref= so the creator's code is saved in the
-Razorpay order notes (notes.referral_code). Codes are case-insensitive.
+Each link saves the creator's code in the Razorpay order notes (notes.referral_code).
+Paste the FULL url including ?ref=. Codes are case-insensitive. Any new code works
+by just making a new link: ?ref=<name> (letters, digits, - or _).
+
+=== PHONE APP, Rs 149 (/MasterClipPhone/) ===
+
+Tushar
+https://masterprompt.anintellectualcompany.com/MasterClipPhone/?ref=tushar
+
+Kanishk Negi
+https://masterprompt.anintellectualcompany.com/MasterClipPhone/?ref=kanishk
+
+Akshat
+https://masterprompt.anintellectualcompany.com/MasterClipPhone/?ref=akshat
+
+Nexo
+https://masterprompt.anintellectualcompany.com/MasterClipPhone/?ref=nexo
+
+=== WINDOWS KIT, Rs 349 (/MasterClipTool/) ===
 
 Tushar
 https://masterprompt.anintellectualcompany.com/MasterClipTool/?ref=tushar
@@ -9,5 +26,15 @@ https://masterprompt.anintellectualcompany.com/MasterClipTool/?ref=tushar
 Kanishk Negi
 https://masterprompt.anintellectualcompany.com/MasterClipTool/?ref=kanishk
 
-Akshat (new)
+Akshat
 https://masterprompt.anintellectualcompany.com/MasterClipTool/?ref=akshat
+
+Nexo
+https://masterprompt.anintellectualcompany.com/MasterClipTool/?ref=nexo
+
+=== Tracking ===
+Razorpay dashboard: Transactions -> Orders -> open an order -> Notes shows
+  product = masterclip-android (Rs 149) or masterclip-windows (Rs 349)
+  referral_code = the creator's code
+Live per-creator report (paid count, phone count, rupees, refunds):
+  https://masterprompt.anintellectualcompany.com/api/masterclip/referrals?key=<your MASTERCLIP_REPORT_KEY>

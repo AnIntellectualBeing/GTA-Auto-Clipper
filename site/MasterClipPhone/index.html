@@ -6,7 +6,7 @@
   <title>MasterClip for Android · ₹149</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/masterclip-page.css?v=2"><link rel="stylesheet" href="/masterclip-phone.css?v=1"><link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/masterclip-page.css?v=2"><link rel="stylesheet" href="/masterclip-phone.css?v=2"><link rel="icon" href="/favicon.svg" type="image/svg+xml">
 </head>
 <body data-product="android">
   <header class="top"><div class="wrap">
@@ -32,15 +32,9 @@
           <a class="paid-link" href="/MasterClipTool/download-ready">Already paid but no link? Get it here →</a>
         </div>
       </div>
-      <div class="hero-art phone-art" aria-hidden="true">
-        <div class="phone">
-          <div class="phone-screen">
-            <div class="ph-bar"><b>MasterClip</b><span>3 clips ready</span></div>
-            <div class="ph-clip"><div class="ph-cam"></div><div class="ph-game"></div><div class="ph-cap">THAT WAS <em>INSANE</em></div></div>
-            <div class="ph-row"><span>Clip 1 · 0:30</span><span class="ph-post">Post</span></div>
-            <div class="ph-row"><span>Clip 2 · 0:30</span><span class="ph-post">Post</span></div>
-          </div>
-        </div>
+      <div class="hero-art phone-art" aria-label="Screenshots of the MasterClip app on a phone">
+        <div class="phone phone-back"><div class="phone-screen shot"><img src="/images/mc/phone-looks.webp" alt="MasterClip app: pick a template and caption style" width="540" height="783" loading="lazy"></div></div>
+        <div class="phone phone-front"><div class="phone-screen shot"><img src="/images/mc/phone-home.webp" alt="MasterClip app home screen: paste a YouTube or Twitch link" width="540" height="1131"></div></div>
       </div>
     </section>
 
@@ -85,7 +79,7 @@
           <li>Free updates on your download page</li>
           <li>Email support</li>
         </ul>
-        <div class="buyer-fields"><label>EMAIL<input id="buyer-email" type="email" inputmode="email" autocomplete="email" placeholder="you@gmail.com" required></label><label>PHONE (OPTIONAL)<input id="buyer-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="98xxxxxxxx"></label><p class="hint">Only used to send your download link and to find your purchase if you lose it.</p></div>
+        <div class="buyer-fields"><label>EMAIL (OPTIONAL)<input id="buyer-email" type="email" inputmode="email" autocomplete="email" placeholder="you@gmail.com"></label><label>PHONE (OPTIONAL)<input id="buyer-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="98xxxxxxxx"></label><p class="hint">Optional. Only used to email your download link. Your private download page opens right after paying either way, and you can always find your purchase with your payment ID.</p></div>
         <button class="btn" id="buy-button" data-buy type="button" disabled>Get it · ₹149 →</button>
         <p class="payment-status" id="payment-status" aria-live="polite">Secure Razorpay checkout · your private download page opens right after payment.</p>
         <a class="already" id="already-bought" href="/MasterClipTool/download-ready" hidden>You already bought this here: open your downloads →</a>

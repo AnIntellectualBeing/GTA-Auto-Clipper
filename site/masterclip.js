@@ -75,8 +75,8 @@ if (params.get('payment') === 'failed') {
 function buyerDetails() {
   const email = (emailInput?.value || '').trim();
   const phone = (phoneInput?.value || '').replace(/[^\d+]/g, '');
-  if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email)) {
-    setStatus('Please enter your email so we can send and recover your download link.', true);
+  if (email && !/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email)) {
+    setStatus('That email does not look right. Fix it, or leave it empty.', true);
     emailInput?.focus();
     return null;
   }
@@ -134,7 +134,7 @@ async function buy() {
       name: 'MasterClip',
       description: android ? 'MasterClip for Android' : 'MasterClip Complete Guide + extras + support',
       order_id: order.orderId,
-      prefill: { email: buyer.email, ...(buyer.phone && { contact: buyer.phone }) },
+      prefill: { ...(buyer.email && { email: buyer.email }), ...(buyer.phone && { contact: buyer.phone }) },
       notes: { product: android ? 'masterclip-android' : 'masterclip-windows' },
       theme: { color: '#d83b2d' },
       handler: async (payment) => {

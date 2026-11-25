@@ -1,5 +1,5 @@
 import { razorpayAuth, constantTimeHexEqual, hmacHex } from '../../_lib/razorpay.mjs';
-import { MASTERCLIP_AMOUNT_PAISE, MASTERCLIP_PRODUCT } from '../../_lib/masterclip.mjs';
+import { ANDROID_PRODUCT, PRODUCT_AMOUNTS } from '../../_lib/masterclip.mjs';
 
 // Private owner report: paid MasterClip sales per referral code.
 //   /api/masterclip/referrals?key=<MASTERCLIP_REPORT_KEY>
@@ -22,13 +22,19 @@ export async function referralReport(env, { days = 400, maxPages = 10, now = Dat
     const list = await rzp(env, `payments?count=100&skip=${p * 100}&from=${from}`);
     const items = list?.items || [];
     for (const pay of items) {
-      if (pay.status !== 'captured' || Number(pay.amount) !== MASTERCLIP_AMOUNT_PAISE || !pay.order_id) continue;
+      if (pay.status !== 'captured' || !Object.values(PRODUCT_AMOUNTS).includes(Number(pay.amount)) || !pay.order_id) continue;
       if (!orders.has(pay.order_id)) orders.set(pay.order_id, await rzp(env, `orders/${encodeURIComponent(pay.order_id)}`));
       const order = orders.get(pay.order_id);
-      if (order?.notes?.product !== MASTERCLIP_PRODUCT) continue;
+      const product = order?.notes?.product;
+      if (!Object.hasOwn(PRODUCT_AMOUNTS, product) || PRODUCT_AMOUNTS[product] !== Number(pay.amount)) continue;
       const code = order.notes.referral_code || pay.notes?.referral_code || '(no referral)';
-      const row = rows.get(code) || { code, sales: 0, refunded: 0, last: 0 };
-      if (pay.amount_refunded > 0) row.refunded += 1; else row.sales += 1;
+      const row = rows.get(code) || { code, sales: 0, phone: 0, rupees: 0, refunded: 0, last: 0 };
+      if (pay.amount_refunded > 0) row.refunded += 1;
+      else {
+        row.sales += 1;
+        row.rupees += Number(pay.amount) / 100;
+        if (product === ANDROID_PRODUCT) row.phone += 1;
+      }
       row.last = Math.max(row.last, pay.created_at || 0);
       rows.set(code, row);
     }
@@ -45,10 +51,11 @@ export async function onRequestGet({ request, env }) {
   let rows;
   try { rows = await referralReport(env); } catch { return page('<h1>Razorpay did not answer</h1><p>Reload in a minute.</p>', 502); }
   const total = rows.reduce((s, r) => s + r.sales, 0);
+  const rupees = rows.reduce((s, r) => s + r.rupees, 0);
   const date = (t) => (t ? new Date(t * 1000).toISOString().slice(0, 10) : '–');
-  const body = `<h1>MasterClip referrals</h1><p>Paid ₹349 sales per referral link (live from Razorpay, refunds counted separately). Total paid: <b>${total}</b> · ₹${(total * 349).toLocaleString('en-IN')}</p>
-<table><tr><th>Referral</th><th class="n">Paid</th><th class="n">₹</th><th class="n">Refunded</th><th>Last sale</th></tr>
-${rows.map((r) => `<tr><td><code>${esc(r.code)}</code></td><td class="n">${r.sales}</td><td class="n">${(r.sales * 349).toLocaleString('en-IN')}</td><td class="n">${r.refunded}</td><td>${date(r.last)}</td></tr>`).join('') || '<tr><td colspan="5">No paid sales yet.</td></tr>'}
+  const body = `<h1>MasterClip referrals</h1><p>Paid MasterClip sales per referral link: ₹349 kit and ₹149 phone app (live from Razorpay, refunds counted separately). Total paid: <b>${total}</b> · ₹${rupees.toLocaleString('en-IN')}</p>
+<table><tr><th>Referral</th><th class="n">Paid</th><th class="n">of which phone</th><th class="n">₹</th><th class="n">Refunded</th><th>Last sale</th></tr>
+${rows.map((r) => `<tr><td><code>${esc(r.code)}</code></td><td class="n">${r.sales}</td><td class="n">${r.phone}</td><td class="n">${r.rupees.toLocaleString('en-IN')}</td><td class="n">${r.refunded}</td><td>${date(r.last)}</td></tr>`).join('') || '<tr><td colspan="6">No paid sales yet.</td></tr>'}
 </table><p>In Razorpay: Orders → open an order → Notes shows <code>referral_code</code>.</p>`;
   return page(body);
 }

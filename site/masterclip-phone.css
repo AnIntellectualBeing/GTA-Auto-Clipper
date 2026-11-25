@@ -14,3 +14,13 @@
 .ph-row{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 11px;font-size:12px;color:var(--ink)}
 .ph-post{background:var(--red);color:#fff;border-radius:8px;padding:4px 10px;font-weight:700}
 @media (max-width:860px){.extras.three{grid-template-columns:1fr}}
+
+/* real app screenshots in the hero */
+.phone-art{position:relative;min-height:470px;align-items:flex-start}
+.phone-art .phone{position:relative}
+.phone-art .phone-front{z-index:2;width:236px;aspect-ratio:9/19}
+.phone-art .phone-back{position:absolute;left:50%;top:34px;margin-left:30px;width:210px;aspect-ratio:9/16;transform:rotate(5deg);opacity:.96}
+.phone-art .phone-front{margin-right:90px}
+.phone-screen.shot{padding:0;background:#faf6f0}
+.phone-screen.shot img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}
+@media (max-width:860px){.phone-art{min-height:0;justify-content:center}.phone-art .phone-back{display:none}.phone-art .phone-front{margin-right:0}}
