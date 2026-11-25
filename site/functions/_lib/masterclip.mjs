@@ -1,5 +1,12 @@
 export const MASTERCLIP_AMOUNT_PAISE = 34900;
 export const MASTERCLIP_PRODUCT = 'masterclip-windows';
+// The phone app on its own: ₹149, APK only (the ₹349 kit includes it too).
+export const ANDROID_AMOUNT_PAISE = 14900;
+export const ANDROID_PRODUCT = 'masterclip-android';
+// Razorpay order notes.product -> the one amount that product may be paid with. The ₹149 guide on
+// the same account shares the amount, so the order's product note is always checked as well.
+export const PRODUCT_AMOUNTS = { [MASTERCLIP_PRODUCT]: MASTERCLIP_AMOUNT_PAISE, [ANDROID_PRODUCT]: ANDROID_AMOUNT_PAISE };
+export const isKnownAmount = (amount) => Object.values(PRODUCT_AMOUNTS).includes(Number(amount));
 export const MASTERCLIP_INSTALLER_URL = 'https://github.com/AnIntellectualBeing/MasterClip/releases/latest/download/MasterClipSetup.exe';
 export const SUPPORT_EMAIL = 'anintellectualcompany.contact@gmail.com';
 export const GUIDE_DEFAULT_KEY = 'MasterClip-Guide.pdf';
@@ -63,6 +70,9 @@ export function masterclipDeliveryEnabled(env) {
 export function masterclipEnabled(env) {
   return masterclipDeliveryEnabled(env) && Boolean(guideBucket(env));
 }
+
+// The phone app only needs the Razorpay keys (the APK is checked at download time).
+export const androidEnabled = masterclipDeliveryEnabled;
 
 export function sameOrigin(request) {
   const origin = request.headers.get('origin');

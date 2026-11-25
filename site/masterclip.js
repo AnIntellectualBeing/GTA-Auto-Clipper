@@ -11,6 +11,8 @@ const store = {
 const $ = (selector) => document.querySelector(selector);
 
 const referralCode = rememberReferral();
+// <body data-product="android"> is the ₹149 phone-app page; every other page sells the ₹349 kit.
+const android = document.body.dataset.product === 'android';
 const buttons = [...document.querySelectorAll('[data-buy]')];
 const status = $('#payment-status');
 const emailInput = $('#buyer-email');
@@ -57,7 +59,7 @@ if (browser.inApp && banner) {
 
 // ---- Already bought in this browser? Show the way back to the downloads page.
 const saved = store.get(ACCESS_KEY);
-if (saved?.url && /\/MasterClipTool\/access\?token=/.test(saved.url)) {
+if (saved?.url && /\/(MasterClipTool|MasterClipPhone)\/access\?token=/.test(saved.url)) {
   const link = $('#already-bought');
   if (link) { link.href = saved.url; link.hidden = false; }
 }
@@ -120,7 +122,7 @@ async function buy() {
   setStatus('Starting secure checkout…');
   try {
     const created = await fetch('/api/masterclip/create-order', {
-      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ referralCode, ...buyer }),
+      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ referralCode, ...buyer, ...(android && { product: 'android' }) }),
     });
     const order = await created.json();
     if (!created.ok) throw new Error(order.error || 'Could not start checkout.');
@@ -130,10 +132,10 @@ async function buy() {
       amount: order.amount,
       currency: order.currency,
       name: 'MasterClip',
-      description: 'MasterClip Complete Guide + extras + support',
+      description: android ? 'MasterClip for Android' : 'MasterClip Complete Guide + extras + support',
       order_id: order.orderId,
       prefill: { email: buyer.email, ...(buyer.phone && { contact: buyer.phone }) },
-      notes: { product: 'masterclip-windows' },
+      notes: { product: android ? 'masterclip-android' : 'masterclip-windows' },
       theme: { color: '#d83b2d' },
       handler: async (payment) => {
         try {
@@ -156,7 +158,7 @@ async function buy() {
     // and POST the result to our server, which forwards to the access page.
     if (browser.inApp) {
       options.redirect = true;
-      options.callback_url = `${window.location.origin}/api/masterclip/callback`;
+      options.callback_url = `${window.location.origin}/api/masterclip/callback${android ? '?p=android' : ''}`;
     }
     const checkout = new window.Razorpay(options);
     checkout.on('payment.failed', (event) => {

@@ -20,11 +20,12 @@ export async function onRequestPost(context) {
     let meta = {};
     try { meta = JSON.parse(field('error[metadata]') || '{}'); } catch { /* ignore */ }
     const order = /^order_[A-Za-z0-9]{6,40}$/.test(meta.order_id || '') ? `&order=${meta.order_id}` : '';
-    return go(`/MasterClipTool/?payment=failed${order}#buy`);
+    const page = new URL(request.url).searchParams.get('p') === 'android' ? 'MasterClipPhone' : 'MasterClipTool';
+    return go(`/${page}/?payment=failed${order}#buy`);
   }
   const result = await confirmCheckout(env, { orderId, paymentId, signature: field('razorpay_signature') });
   if (result.status === 'ok') {
-    const link = await accessUrl(request, env, result.payment.id);
+    const link = await accessUrl(request, env, result.payment.id, result.payment.product);
     emailAfterCheckout(context, env, result.payment, link);
     return go(link);
   }

@@ -159,7 +159,9 @@ test('the access page shows the guide, the installer and a copyable link; bad li
 const form = (fields) => new Request(`${origin}/api/masterclip/callback`, { method: 'POST', body: new URLSearchParams(fields) });
 
 test('the redirect callback sends a paid buyer straight to the access page', async (t) => {
-  t.mock.method(globalThis, 'fetch', async () => Response.json({ id: PAY, status: 'captured', order_id: 'order_cb12345', amount: 34900, currency: 'INR' }));
+  t.mock.method(globalThis, 'fetch', async (url) => (String(url).includes('/orders/')
+    ? Response.json({ id: 'order_cb12345', notes: { product: 'masterclip-windows' } })
+    : Response.json({ id: PAY, status: 'captured', order_id: 'order_cb12345', amount: 34900, currency: 'INR' })));
   const signature = await hmacHex(env.RAZORPAY_KEY_SECRET, `order_cb12345|${PAY}`);
   const res = await callback({ env, request: form({ razorpay_payment_id: PAY, razorpay_order_id: 'order_cb12345', razorpay_signature: signature }) });
   assert.equal(res.status, 303);

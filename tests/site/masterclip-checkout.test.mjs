@@ -48,7 +48,9 @@ test('order is ₹349 on the server and carries the referral code and buyer cont
 });
 
 test('verified payment returns a long-lived access link (no cookie) that also opens the installer', async (t) => {
-  t.mock.method(globalThis, 'fetch', async () => Response.json({ id: 'pay_abc123456', status: 'captured', order_id: 'order_1', amount: 34900, currency: 'INR' }));
+  t.mock.method(globalThis, 'fetch', async (url) => (String(url).includes('/orders/')
+    ? Response.json({ id: 'order_1', notes: { product: 'masterclip-windows' } })
+    : Response.json({ id: 'pay_abc123456', status: 'captured', order_id: 'order_1', amount: 34900, currency: 'INR' })));
   const signature = await hmacHex(env.RAZORPAY_KEY_SECRET, 'order_1|pay_abc123456');
   const verified = await verifyPayment({ env, request: post('/api/masterclip/verify-payment', { razorpay_order_id: 'order_1', razorpay_payment_id: 'pay_abc123456', razorpay_signature: signature }) });
   assert.equal(verified.status, 200);

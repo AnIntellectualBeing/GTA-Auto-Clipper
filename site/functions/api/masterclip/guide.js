@@ -1,5 +1,5 @@
 import { KIT_FILENAME, KIT_KEY, GUIDE_FILENAME, SUPPORT_EMAIL, guideBucket, guideKey } from '../../_lib/masterclip.mjs';
-import { verifyAccessToken } from '../../_lib/masterclip-access.mjs';
+import { verifyKitToken } from '../../_lib/masterclip-access.mjs';
 
 // The private guide PDF, streamed from R2 only for a valid access token.
 //   /api/masterclip/guide?token=...           -> download (Content-Disposition: attachment)
@@ -30,7 +30,7 @@ export function parseRange(header, size) {
 
 async function serve(request, env, headOnly) {
   const params = new URL(request.url).searchParams;
-  const paymentId = await verifyAccessToken(env, params.get('token'));
+  const paymentId = await verifyKitToken(env, params.get('token'));
   if (!paymentId) return text(`This guide link is not valid or has expired. Get a fresh link at https://masterprompt.anintellectualcompany.com/MasterClipTool/download-ready with your payment ID (pay_...), or email ${SUPPORT_EMAIL}.`, 401);
   const bucket = guideBucket(env);
   if (!bucket) return text(`The guide is temporarily unavailable. Please try again soon, or email ${SUPPORT_EMAIL} with your payment ID (${paymentId}) and we will send it.`, 503);

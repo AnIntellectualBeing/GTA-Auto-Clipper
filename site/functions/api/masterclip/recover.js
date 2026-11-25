@@ -35,11 +35,11 @@ export async function onRequestPost(context) {
       : kind === 'order' ? await paidPaymentOfOrder(env, orderId)
         : await paymentByContact(env, { email, phone });
     if (!payment) return jsonResponse({ paid: false, error: NOT_FOUND[kind] }, kind === 'order' ? 200 : 404);
-    const link = await accessUrl(request, env, payment.id);
+    const link = await accessUrl(request, env, payment.id, payment.product);
     let emailed = false;
     if (kind === 'contact' && emailEnabled(env) && payment.email) {
       emailed = true;
-      later(context, sendAccessEmail(env, payment.email, link, payment.id));
+      later(context, sendAccessEmail(env, payment.email, link, payment.id, payment.product));
     }
     return jsonResponse({ paid: true, accessUrl: link, link, paymentId: payment.id, emailed });
   } catch {

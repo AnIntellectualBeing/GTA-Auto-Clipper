@@ -3,7 +3,7 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var msg = $('recover-msg');
-  var accessPattern = /^https:\/\/[^\s]+\/MasterClipTool\/access\?token=[\w.%-]+$/;
+  var accessPattern = /^https:\/\/[^\s]+\/(MasterClipTool|MasterClipPhone)\/access\?token=[\w.%-]+$/;
 
   function read(key) { try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch (e) { return null; } }
   function write(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* blocked */ } }

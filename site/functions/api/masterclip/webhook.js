@@ -15,12 +15,14 @@ export async function onRequestPost({ request, env }) {
   try { event = JSON.parse(raw); } catch { return jsonResponse({ error: 'Bad body.' }, 400); }
   const payment = event?.payload?.payment?.entity;
   if (event?.event !== 'payment.captured' || !payment?.id) return jsonResponse({ ignored: true });
+  let product;
   try {
-    if (!(await masterclipPayment(env, payment))) return jsonResponse({ ignored: true });
+    product = await masterclipPayment(env, payment);
+    if (!product) return jsonResponse({ ignored: true });
   } catch {
     return jsonResponse({ error: 'Could not check the order.' }, 502); // Razorpay retries
   }
   if (!emailEnabled(env) || !payment.email) return jsonResponse({ ok: true, emailed: false });
-  const sent = await sendAccessEmail(env, payment.email, await accessUrl(request, env, payment.id), payment.id);
+  const sent = await sendAccessEmail(env, payment.email, await accessUrl(request, env, payment.id, product), payment.id, product);
   return sent ? jsonResponse({ ok: true, emailed: true }) : jsonResponse({ error: 'Email failed.' }, 502);
 }

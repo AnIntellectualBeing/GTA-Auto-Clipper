@@ -17,7 +17,7 @@ export async function onRequestPost(context) {
   if (result.status === 'invalid') return jsonResponse({ error: 'Payment verification failed.' }, 400);
   if (result.status === 'error') return jsonResponse({ error: 'Could not confirm payment. Please retry in a moment.' }, 502);
   if (result.status === 'pending') return jsonResponse({ pending: true, orderId: body.razorpay_order_id, paymentId: body.razorpay_payment_id }, 202);
-  const link = await accessUrl(request, env, result.payment.id);
+  const link = await accessUrl(request, env, result.payment.id, result.payment.product);
   emailAfterCheckout(context, env, result.payment, link);
   return jsonResponse({ ok: true, accessUrl: link, link, paymentId: result.payment.id });
 }
