@@ -85,6 +85,10 @@ em{font-style:normal;color:var(--red)}
 .price strong{font:700 52px/1 var(--display);letter-spacing:-.05em}
 .price s{color:var(--soft);font-size:18px}
 .price span{color:var(--muted);font-size:14px}
+.launch-offer{display:flex;align-items:center;gap:12px;flex-wrap:wrap;width:100%}
+.launch-offer s{color:var(--soft);font-size:20px}
+.launch-offer strong{font:700 36px/1.2 var(--display);letter-spacing:-.04em}
+.launch-badge{display:inline-block;width:fit-content;padding:6px 10px;border-radius:6px;background:#eaf5ec;color:#245f30;font-size:14px;font-weight:800;line-height:1.4}
 .buy-list{list-style:none;padding:0;margin:16px 0;display:grid;gap:8px;font-size:15px}
 .buy-list li{display:flex;gap:10px}
 .buy-list li:before{content:"✓";color:var(--red);font-weight:800}
