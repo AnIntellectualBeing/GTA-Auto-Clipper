@@ -1,5 +1,5 @@
 import { constantTimeHexEqual, hmacHex, razorpayAuth } from './razorpay.mjs';
-import { MASTERCLIP_PRODUCT, PRODUCT_AMOUNTS, isKnownAmount, cleanEmail, cleanPhone } from './masterclip.mjs';
+import { MASTERCLIP_PRODUCT, acceptsProductAmount, isKnownAmount, cleanEmail, cleanPhone } from './masterclip.mjs';
 
 // Legacy 7-day installer links (/api/masterclip/download?t=<expires>.<pay_id>.<sig>) issued before
 // the access page existed. Still honoured until they expire.
@@ -17,7 +17,7 @@ async function razorpay(env, path) {
   return response.json();
 }
 
-// Auto-capture: a ₹349 payment that is only "authorized" on a MasterClip order is captured by us
+// Auto-capture: a ₹249 payment that is only "authorized" on a MasterClip order is captured by us
 // right away, so delivery never depends on the Razorpay account's capture setting.
 function authorizedMasterclipAmount(payment) {
   return payment?.status === 'authorized' && isKnownAmount(payment.amount) && payment.currency === 'INR';
@@ -44,18 +44,18 @@ function capturedMasterclipAmount(payment) {
   return payment?.status === 'captured' && isKnownAmount(payment.amount) && payment.currency === 'INR';
 }
 
-// The MasterClip product an order was created for (kit ₹349 or phone ₹149), or null. The amount
+// The MasterClip product an order was created for (kit ₹249 or phone ₹149), or null. The amount
 // must match that product, because the ₹149 guide on the same account has the same amount.
 async function orderProduct(env, orderId, amount) {
   if (!orderId) return null;
   const order = await razorpay(env, `orders/${encodeURIComponent(orderId)}`);
   const product = order?.notes?.product;
-  return Object.hasOwn(PRODUCT_AMOUNTS, product) && PRODUCT_AMOUNTS[product] === Number(amount) ? product : null;
+  return acceptsProductAmount(product, amount) ? product : null;
 }
 
 const withProduct = (payment, product) => (product ? { ...payment, product } : null);
 
-// A captured MasterClip payment (₹349 kit or ₹149 phone app). Returns the product id, or null.
+// A captured MasterClip payment (₹249 kit or ₹149 phone app). Returns the product id, or null.
 export async function masterclipPayment(env, payment) {
   if (!capturedMasterclipAmount(payment)) return null;
   return orderProduct(env, payment.order_id, payment.amount);

@@ -1,7 +1,7 @@
 import { APK_META_KEY, SUPPORT_EMAIL, apkPartKey } from '../../_lib/masterclip.mjs';
 import { verifyAccessToken } from '../../_lib/masterclip-access.mjs';
 
-// /api/masterclip/apk?token=...  MasterClip for Android, only for a valid ₹349 access token.
+// /api/masterclip/apk?token=...  MasterClip for Android, only for a valid ₹249 access token.
 // The APK is never on a public URL: it lives in Workers KV (MASTERCLIP_KV) as numbered parts,
 // streamed back to back. Upload with tools\upload-apk.ps1.
 const text = (body, status) => new Response(body, {

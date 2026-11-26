@@ -11,7 +11,7 @@ const store = {
 const $ = (selector) => document.querySelector(selector);
 
 const referralCode = rememberReferral();
-// <body data-product="android"> is the ₹149 phone-app page; every other page sells the ₹349 kit.
+// <body data-product="android"> is the ₹149 phone-app page; every other page sells the ₹249 kit.
 const android = document.body.dataset.product === 'android';
 const buttons = [...document.querySelectorAll('[data-buy]')];
 const status = $('#payment-status');

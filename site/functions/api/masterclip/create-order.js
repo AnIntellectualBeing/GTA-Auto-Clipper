@@ -11,7 +11,7 @@ function buyerNotes(notes, input) {
 export async function onRequestPost({ request, env }) {
   if (!sameOrigin(request)) return jsonResponse({ error: 'Checkout request was not accepted.' }, 403);
   const input = await request.json().catch(() => null);
-  // product: 'android' is the ₹149 phone app; anything else is the ₹349 kit.
+  // product: 'android' is the ₹149 phone app; anything else is the ₹249 kit.
   const android = input?.product === 'android';
   const amount = android ? ANDROID_AMOUNT_PAISE : MASTERCLIP_AMOUNT_PAISE;
   const product = android ? ANDROID_PRODUCT : MASTERCLIP_PRODUCT;

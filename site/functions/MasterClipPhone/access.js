@@ -4,7 +4,7 @@ import { androidIntentUrl, detectInApp } from '../../inapp.js';
 
 // /MasterClipPhone/access?token=...  The ₹149 phone-app buyer's durable download page.
 // Server-rendered, so it works without cookies, storage or JavaScript. Only the APK is offered:
-// the guide and kit belong to the ₹349 purchase.
+// the guide and kit belong to the ₹249 purchase.
 const esc = (value) => String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 const SECURITY_HEADERS = {

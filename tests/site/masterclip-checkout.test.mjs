@@ -26,7 +26,7 @@ test('checkout stays off until the guide storage (R2) is bound', async () => {
   assert.equal((await (await config({ env })).json()).enabled, true);
 });
 
-test('order is ₹349 on the server and carries the referral code and buyer contact', async (t) => {
+test('order is ₹249 on the server and carries the referral code and buyer contact', async (t) => {
   let order;
   t.mock.method(globalThis, 'fetch', async (_url, init) => {
     order = JSON.parse(init.body);
@@ -35,7 +35,7 @@ test('order is ₹349 on the server and carries the referral code and buyer cont
   for (const [referralCode, expected] of [['Akshat', 'akshat'], ['bad code!', undefined]]) {
     const response = await createOrder({ env, request: post('/api/masterclip/create-order', { referralCode, amount: 1, email: ' Buyer@Example.com ', phone: '+91 98765 43210' }) });
     assert.equal(response.status, 200);
-    assert.equal(order.amount, 34900);
+    assert.equal(order.amount, 24900);
     assert.equal(order.notes.product, 'masterclip-windows');
     assert.equal(order.notes.referral_code, expected);
     assert.equal(order.notes.buyer_email, 'buyer@example.com');
