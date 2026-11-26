@@ -26,7 +26,7 @@ export function accessEmail(link, paymentId, product) {
     return { subject: 'Your MasterClip for Android download', text, html };
   }
   const text = [
-    'Thank you for buying MasterClip (₹349).',
+    'Thank you for buying MasterClip (₹249).',
     '',
     'Your downloads (the Complete Guide PDF and the Windows installer) are here. Bookmark this link; it works on any browser and device:',
     link,
@@ -34,7 +34,7 @@ export function accessEmail(link, paymentId, product) {
     `Payment ID: ${paymentId}`,
     `Lost this link? Open https://masterprompt.anintellectualcompany.com/MasterClipTool/download-ready and enter your payment ID, or reply to ${SUPPORT_EMAIL}.`,
   ].join('\n');
-  const html = `<p>Thank you for buying MasterClip (₹349).</p>
+  const html = `<p>Thank you for buying MasterClip (₹249).</p>
 <p>Your downloads (the Complete Guide PDF and the Windows installer) are on your access page. Bookmark it; it works on any browser and device.</p>
 <p><a href="${escapeHtml(link)}" style="display:inline-block;padding:12px 18px;background:#e44836;color:#fff;border-radius:8px;font-weight:700;text-decoration:none">Open my MasterClip downloads</a></p>
 <p style="font-size:13px;color:#655e5a">Or copy this link: ${escapeHtml(link)}<br>Payment ID: ${escapeHtml(paymentId)}<br>Anything not working? Email ${SUPPORT_EMAIL} with your payment ID.</p>`;
